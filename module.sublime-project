@@ -1,0 +1,10 @@
+{
+	"folders":
+	[
+		{
+			"path": "/home/mdk/workspace/module",
+      "file_exclude_patterns": ["*.ko", "*.cmd", "*.mod.c", "*.symvers", "*.order"],
+      "folder_exclude_patterns": [".tmp_versions"]
+		}
+	]
+}

@@ -1,0 +1,1141 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"irq_",
+				"raspicomm_irq_work_queue_handler"
+			],
+			[
+				"TxQu",
+				"TxQueueLock"
+			],
+			[
+				"Base",
+				"GPIO_BASE"
+			],
+			[
+				"gp",
+				"gpio"
+			],
+			[
+				"raspicomm_max",
+				"raspicomm_max3140_get_swbacksleep"
+			],
+			[
+				"MAX3140_RE",
+				"MAX3140_READ_DATA"
+			],
+			[
+				"gpioc",
+				"gpioconfig"
+			],
+			[
+				"raspicomm_spi0_de",
+				"raspicomm_spi0_deinit_irq"
+			],
+			[
+				"MAX3140_",
+				"MAX3140_WRITE_CONFIG"
+			],
+			[
+				"MAX",
+				"MAX3140_UART_SHDNo"
+			],
+			[
+				"raspicomm_sp",
+				"raspicomm_spi0_send"
+			],
+			[
+				"MaX",
+				"MAX3140_UART_T"
+			],
+			[
+				"Parit",
+				"ParityEnabled"
+			],
+			[
+				"Pari",
+				"ParityEnabled"
+			],
+			[
+				"U",
+				"MAX3140_UART_TM"
+			],
+			[
+				"PAR",
+				"PARITY_OFF"
+			],
+			[
+				"PARITY",
+				"PARITY_ON"
+			],
+			[
+				"DATA",
+				"DATABITS_8"
+			],
+			[
+				"DATAB",
+				"DATABITS_7"
+			],
+			[
+				"STOP",
+				"STOPBITS_TWO"
+			],
+			[
+				"raspicomm_s",
+				"raspicomm_spi0_send"
+			],
+			[
+				"raspicomm_ma",
+				"raspicomm_max3140_configure"
+			],
+			[
+				"gpio",
+				"gpio_requested"
+			],
+			[
+				"raspico",
+				"raspicomm_irq_handler_joystick"
+			],
+			[
+				"ras",
+				"raspicomm_irq_handler_joystick"
+			],
+			[
+				"Gpio",
+				"Gpio22_Irq"
+			],
+			[
+				"G",
+				"Gpio22_Irq"
+			],
+			[
+				"SPI0",
+				"SPI0_CLKSPEED"
+			],
+			[
+				"SPI0_",
+				"SPI0_FIFO"
+			],
+			[
+				"SP",
+				"SPI0_CNTLSTAT"
+			],
+			[
+				"Rasp",
+				"RaspicommMajorDriverNumber"
+			],
+			[
+				"Con",
+				"SpiConfig"
+			],
+			[
+				"send",
+				"raspicomm_spi0_send"
+			],
+			[
+				"Tq",
+				"txqueue"
+			],
+			[
+				"raspicomm_",
+				"raspicomm_spi0_send"
+			],
+			[
+				"Open",
+				"OpenTTY"
+			],
+			[
+				"Part",
+				"PARITY_OFF"
+			],
+			[
+				"Spi",
+				"SpiConfig"
+			],
+			[
+				"OPen",
+				"OpenTTY"
+			],
+			[
+				"DEV",
+				"IRQ_DEV_ID"
+			],
+			[
+				"IRQ_",
+				"IRQ_DEV_ID"
+			],
+			[
+				"raspicomm_spio",
+				"raspicomm_spi0_deinit_gpio"
+			],
+			[
+				"raspicomm_max3",
+				"raspicomm_max3140_get_uart_config"
+			],
+			[
+				"max3140_",
+				"raspicomm_max3140_get_uart_config"
+			],
+			[
+				"Write",
+				"WriteBufferIndex"
+			],
+			[
+				"rs",
+				"rs485_get_free_write_buffer_length"
+			],
+			[
+				"rs485_",
+				"rs485_get_free_write_buffer_length"
+			],
+			[
+				"raspi",
+				"raspicomm_driver"
+			],
+			[
+				"raspicomm_t",
+				"raspicomm_tty_driver"
+			],
+			[
+				"ioct",
+				"ioctl_param"
+			],
+			[
+				"rs4",
+				"rs485_exit"
+			],
+			[
+				"majr",
+				"majorDriverNumber"
+			],
+			[
+				"majo",
+				"majorDriverNumber"
+			],
+			[
+				"maj",
+				"majorDriverNumber"
+			],
+			[
+				"hello_",
+				"hello_init"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "module.c",
+			"settings":
+			{
+				"buffer_size": 31156,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "module.h",
+			"settings":
+			{
+				"buffer_size": 880,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "queue.c",
+			"settings":
+			{
+				"buffer_size": 997,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Makefile",
+			"settings":
+			{
+				"buffer_size": 390,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/User/raspberrypi make.sublime-build",
+	"command_palette":
+	{
+		"height": 75.0,
+		"selected_items":
+		[
+			[
+				"package install",
+				"Package Control: Install Package"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"keybi",
+				"Preferences: Key Bindings - Default"
+			],
+			[
+				"settings",
+				"Preferences: Settings - User"
+			],
+			[
+				"user ",
+				"Preferences: Settings - User"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"key us",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"defal",
+				"Preferences: Key Bindings - Default"
+			],
+			[
+				"prefere",
+				"Preferences: Settings - Default"
+			],
+			[
+				"pref",
+				"Preferences: Settings - User"
+			],
+			[
+				"setting",
+				"Preferences: Settings - Default"
+			],
+			[
+				"package remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"package instal",
+				"Package Control: Install Package"
+			],
+			[
+				"package inst",
+				"Package Control: Install Package"
+			],
+			[
+				"packa",
+				"Preferences: Browse Packages"
+			],
+			[
+				"syntax c",
+				"Set Syntax: C"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 139.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": true,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/mdk/workspace/module/deploy.sh",
+		"/home/mdk/workspace/module/Makefile",
+		"/home/mdk/workspace/module/joystick.h",
+		"/home/mdk/workspace/module/joystick.c",
+		"/home/mdk/workspace/rpi/linux-rpi-3.2.27/include/linux/tty_driver.h",
+		"/home/mdk/workspace/module/queue.c",
+		"/home/mdk/workspace/module/module.sublime-workspace",
+		"/home/mdk/workspace/module/queue.h",
+		"/home/mdk/workspace/module/module.h",
+		"/home/mdk/.config/sublime-text-2/Packages/AdvancedNewFile/Default (Linux).sublime-keymap",
+		"/home/mdk/.config/sublime-text-2/Packages/AdvancedNewFile/README.md",
+		"/home/mdk/.config/sublime-text-2/Packages/Dayle Rees Color Schemes/FreshCut.tmTheme",
+		"/home/mdk/.config/sublime-text-2/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/mdk/.config/sublime-text-2/Packages/User/Default (Linux).sublime-keymap",
+		"/home/mdk/.config/sublime-text-2/Packages/User/Preferences.sublime-settings",
+		"/home/mdk/.config/sublime-text-2/Packages/User/raspberrypi make.sublime-build",
+		"/home/mdk/workspace/module/module.c",
+		"/home/mdk/.config/sublime-text-2/Packages/Dayle Rees Color Schemes/Earthsong.tmTheme",
+		"/home/mdk/.config/sublime-text-2/Packages/Dayle Rees Color Schemes/Iceberg.tmTheme",
+		"/home/mdk/workspace/module/module.sublime-project",
+		"/home/mdk/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+		"/home/mdk/.config/sublime-text-2/Packages/Dayle Rees Color Schemes/Iceberg.tmTheme.cache",
+		"/home/mdk/workspace/module/.gitignore",
+		"/home/mdk/.config/sublime-text-2/Packages/User/Distraction Free.sublime-settings",
+		"/home/mdk/workspace/module/modules.order",
+		"/home/mdk/workspace/module/.hello.ko.cmd",
+		"/home/mdk/.config/sublime-text-2/Packages/User/Package Control.sublime-settings",
+		"/home/mdk/.config/sublime-text-2/Packages/User/Default (OSX).sublime-keymap",
+		"/home/mdk/.config/sublime-text-2/Packages/User/Default (Windows).sublime-keymap",
+		"/home/mdk/.config/sublime-text-2/Packages/User/Package Control.last-run"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"ECH",
+			"echo",
+			"joy",
+			"TxQueueLock",
+			"_spi0_send",
+			"raspicomm_spi0_send",
+			"spi0_send",
+			"raspicomm_get_free_write_buffer_length",
+			"_queue",
+			"queue_roo",
+			"queue",
+			"queue_",
+			"printk",
+			"KERN_ERR",
+			"printk",
+			"raspicomm_irq_handler",
+			"irq",
+			"DECLARE",
+			"irqret",
+			"_write",
+			"SPI0_CNTLSTAT",
+			"while",
+			"write_ro",
+			"_alt",
+			"  unsigned int* p = ioremap(SPI0_BASE, 12);",
+			"mem",
+			"raspicomm_spi0_init_gpio",
+			"gpio",
+			"request",
+			"raspicomm_max3140_configure",
+			" raspicomm_max3140_configure",
+			"raspicomm_max3140_configure",
+			"config",
+			"configure",
+			"raspicomm_max3140_configure",
+			"init",
+			"raspicomm_spi0_init",
+			"init",
+			"/*",
+			"raspicomm_spi0_init_gpio",
+			"GpioConfigs",
+			"GpioConfig",
+			"gpioconfig",
+			"gpoio",
+			"raspicomm_spi0_init_gpio",
+			"raspicomm_spi0_init_irq",
+			"raspicomm_spi0_init_gpio",
+			"alternat",
+			"exit",
+			"deinit",
+			" raspicomm_spi0_init_gpio",
+			"gpioconfig",
+			"raspicomm_spi0_deinit_gpio",
+			"raspicomm_spi0_init",
+			"raspicomm_spi0_init_gpio",
+			"init_gp",
+			"Gpio",
+			"raspicomm_spi0_init_gpio",
+			"SwBacksleep",
+			"raspicomm_max3140_configure",
+			"_init",
+			"raspicomm_spi0_init_port",
+			"raspicomm_spi0_send( 0 );\n  msleep(1000);\n  raspicomm_spi0_send( 0x440B );\n  msleep(1000);",
+			"get_pari",
+			"get_paro",
+			"parity",
+			"_init_gp",
+			"init",
+			"raspicomm_max3140_apply_config",
+			"raspicomm_max3140_get_parity_flag",
+			"_write",
+			"raspicomm_irq_handler",
+			"interrupt",
+			"// raspicomm_spi0_send(0);\n  // raspicomm_spi0_send(0x8600);",
+			"_init_gpi",
+			"_init_gpip",
+			"_init",
+			"raspicomm_max3140_get_uart_config",
+			"raspicomm_max3140_configure",
+			"_init_gp",
+			"raspicomm_spi0_init_gpio",
+			"_init",
+			"raspicomm_max3140_configure",
+			"raspicomm_spi0_send",
+			"write_room",
+			"receiv",
+			"// if (parityEven)\n  //   ret = (count % 2) ? MAX3140_wd_Pt : 0;\n  // else\n  ",
+			"raspicomm_max3140_get_parity_flag",
+			"ParityIsEven ",
+			"raspicomm_max3140_get_parity_flag",
+			"queue_dequeue",
+			"irq_han",
+			"irq",
+			"queue_dequeue",
+			"_write",
+			"get_pari",
+			"PARITY_ON",
+			"parity",
+			"set_termio",
+			"Parity",
+			"set_term",
+			"parit",
+			"parity",
+			"todo",
+			"raspicomm_max3140_get_parity_bit",
+			"parity",
+			"\n      ",
+			";\n",
+			"      \n",
+			"irq_han",
+			"irq",
+			"raspicomm_spi0_send",
+			"raspicomm_max3140_configure",
+			"raspicomm_init",
+			"_init",
+			"init_",
+			"raspicomm_spi0_send",
+			"\n  ",
+			"SpiCon",
+			"raspicomm_spi0_init",
+			"raspicomm_rs485_received",
+			"receiv",
+			"raspicomm_spi0_init",
+			"raspicomm_max3140_apply_config",
+			"860",
+			"raspicomm_spi0_send",
+			"UART_T",
+			"tty_struct"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"raspicommDriver"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "module.c",
+					"settings":
+					{
+						"buffer_size": 31156,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9479,
+								9479
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3825.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "module.h",
+					"settings":
+					{
+						"buffer_size": 880,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								794,
+								794
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "queue.c",
+					"settings":
+					{
+						"buffer_size": 997,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								472,
+								472
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 255.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Makefile",
+					"settings":
+					{
+						"buffer_size": 390,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								390,
+								390
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Makefile/Makefile.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 232.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"make",
+				"Makefile"
+			],
+			[
+				"de",
+				"deploy.sh"
+			],
+			[
+				"ma",
+				"Makefile"
+			],
+			[
+				"dep",
+				"deploy.sh"
+			],
+			[
+				"q",
+				"queue.c"
+			],
+			[
+				"module.c",
+				"module.c"
+			],
+			[
+				"modul",
+				"module.h"
+			],
+			[
+				"mak",
+				"Makefile"
+			],
+			[
+				"queue.c",
+				"queue.c"
+			],
+			[
+				"queue.h",
+				"queue.h"
+			],
+			[
+				"module",
+				"module.h"
+			],
+			[
+				"makefi",
+				"Makefile"
+			],
+			[
+				"ig",
+				".gitignore"
+			],
+			[
+				"depl",
+				"deploy.sh"
+			],
+			[
+				"mod",
+				"module.c"
+			],
+			[
+				"hel",
+				"hello.c"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 203.0,
+	"status_bar_visible": true
+}
