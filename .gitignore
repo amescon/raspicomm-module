@@ -5,3 +5,5 @@
 *.order
 *.mod.c
 .tmp_versions/
+*.sublime-project
+*.sublime-workspace
