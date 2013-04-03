@@ -7,3 +7,4 @@
 .tmp_versions/
 *.sublime-project
 *.sublime-workspace
+vs/
