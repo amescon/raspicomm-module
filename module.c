@@ -917,7 +917,7 @@ static void raspicommDriver_set_termios(struct tty_struct* tty, struct ktermios*
   int cflag;
   speed_t baudrate; Databits databits; Parity parity; Stopbits stopbits;
 
-  LOG("raspicomm: raspicommDriver_set_termios called");
+  LOG("raspicomm: raspicommDriver_set_termios() called");
 
   // get the baudrate
   baudrate = tty_get_baud_rate(tty);
