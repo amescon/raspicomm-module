@@ -11,10 +11,10 @@ PREFIX = /home/mdk/workspace/rpi/tools-master/arm-bcm2708/arm-bcm2708-linux-gnue
 all:
 	make ARCH=arm CROSS_COMPILE=$(PREFIX) -C $(LINUX_3_2_27) M=$(SRC) modules
 
-3_2_27:
+3.2.27+:
 	make ARCH=arm CROSS_COMPILE=$(PREFIX) -C $(LINUX_3_2_27) M=$(SRC) modules
 
-3_6_11:
+3.6.11+:
 	make ARCH=arm CROSS_COMPILE=$(PREFIX) -C $(LINUX_3_6_11) M=$(SRC) modules
 
 clean:
