@@ -377,35 +377,37 @@ static void raspicomm_max3140_apply_config(void)
   mutex_unlock ( &SpiLock );
 }
 
-// static int raspicomm_max3140_get_parity_flag(char c)
-// {
-//   // even parity: is 1 if number of ones is odd -> making number of bits of value and parity = even
-//   // odd parity: is 1 if the number of ones is even -> making number of bits of value and parity = odd
+// Uncommented by javicient
 
-//   int parityEven = ParityIsEven;
-//   int parityEnabled = ParityEnabled;
-//   int count = 0, i;
-//   int ret;
+static int raspicomm_max3140_get_parity_flag(char c)
+{
+  // even parity: is 1 if number of ones is odd -> making number of bits of value and parity = even
+  // odd parity: is 1 if the number of ones is even -> making number of bits of value and parity = odd
 
-//   if (parityEnabled == 0)
-//     return 0;
+  int parityEven = ParityIsEven;
+  int parityEnabled = ParityEnabled;
+  int count = 0, i;
+  int ret;
 
-//   // count the number of ones  
-//   for (i = 0; i < 8; i++)
-//     if (c & (1 << i))
-//       count++;
+  if (parityEnabled == 0)
+    return 0;
 
-//   if (parityEven)
-//     ret = (count % 2) ? MAX3140_wd_Pt : 0;
-//   else
-//     ret = (count % 2) ? 0 : MAX3140_wd_Pt;  
+ // count the number of ones  
+   for (i = 0; i < 8; i++)
+     if (c & (1 << i))
+       count++;
 
-//   #if DEBUG
-//     printk( KERN_INFO "raspicomm: raspicomm_max3140_get_parity_flag(c=%c) parityEven=%i, count=%i, ret=%i", c, parityEven, count, ret );
-//   #endif
+   if (parityEven)
+     ret = (count % 2) ? MAX3140_wd_Pt : 0;
+   else
+     ret = (count % 2) ? 0 : MAX3140_wd_Pt;  
 
-//   return ret;
-// }
+   #if DEBUG
+     printk( KERN_INFO "raspicomm: raspicomm_max3140_get_parity_flag(c=%c) parityEven=%i, count=%i, ret=%i", c, parityEven, count, ret );
+   #endif
+
+   return ret;
+ }
 
 #define BCM2708_PERI_BASE 0x20000000
 
@@ -559,7 +561,9 @@ void raspicomm_irq_work_queue_handler(void *arg)
       // raspicomm_spi0_send( MAX3140_UART_TM | txdata | raspicomm_max3140_get_parity_flag((char)txdata) );
       
       // raspicomm_spi0_send( 0x8000| txdata );
-      raspicomm_spi0_send( MAX3140_UART_R | txdata );
+      
+      // javicient
+      raspicomm_spi0_send(MAX3140_UART_R | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
     }
     else
     {
@@ -879,7 +883,12 @@ static int raspicommDriver_write(struct tty_struct* tty,
   if (receive & MAX3140_UART_T) // transmit buffer is ready to accept data
   {
     // txdata = queue_dequeue(&TxQueue);
-    raspicomm_spi0_send( 0x8000 | queue_dequeue(&TxQueue) );
+    
+    // javicient
+    
+    char aux = queue_dequeue(&TxQueue);
+    
+    raspicomm_spi0_send( 0x8000 | aux | raspicomm_max3140_get_parity_flag(aux));
     // raspicomm_spi0_send( 0x8000 |  txdata | raspicomm_max3140_get_parity_flag((char)txdata));
   }
     
