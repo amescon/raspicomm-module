@@ -253,6 +253,7 @@ static int __init raspicomm_init(void)
   raspicommDriver->major = RaspicommMajorDriverNumber;
   raspicommDriver->minor_start = 0;
   raspicommDriver->num = 1;
+  raspicommDriver->flags = TTY_DRIVER_REAL_RAW;
   raspicommDriver->type = TTY_DRIVER_TYPE_SERIAL;
   raspicommDriver->subtype = SERIAL_TYPE_NORMAL;
   raspicommDriver->init_termios = tty_std_termios;
