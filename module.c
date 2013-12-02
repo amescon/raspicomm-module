@@ -467,10 +467,8 @@ static int raspicomm_spi0_send(unsigned int mosi)
   v1 = SPI0_FIFO;
   v2 = SPI0_FIFO;
 
-  // #if DEBUG
-  //   printk( KERN_INFO "raspicomm: raspicomm_spi0_send(%X) returned: %X", mosi, ( (v1<<8) | (v2) ) );
-  // #endif
- 
+  //LOG( "raspicomm_spi0_send(%X) returned: %X", mosi, ( (v1<<8) | (v2) ) );
+
   return ( (v1<<8) | (v2) );
 }
 
