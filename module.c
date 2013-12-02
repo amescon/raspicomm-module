@@ -101,7 +101,7 @@ static void          raspicomm_max3140_apply_config(void);
 static int           raspicomm_spi0_send(unsigned int mosi);
 static void          raspicomm_rs485_received(struct tty_struct* tty, char c);
 
-static void          raspicomm_irq_work_queue_handler(void* args);
+static void          raspicomm_irq_work_queue_handler(struct work_struct *work);
 irqreturn_t          raspicomm_irq_handler(int irq, void* dev_id);
 
 static void                   raspicomm_spi0_init(void);
@@ -507,7 +507,7 @@ volatile static unsigned int* raspicomm_spi0_init_mem(void)
 }
 
 // the bottom half of the irq handler, is allowed to get some sleep
-void raspicomm_irq_work_queue_handler(void *arg)
+void raspicomm_irq_work_queue_handler(struct work_struct *work)
 {
   int rxdata, txdata;
 
