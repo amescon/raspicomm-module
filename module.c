@@ -237,9 +237,7 @@ static int __init raspicomm_init(void)
   SpiConfig = 0;
 
   // log the start of the initialization
-  #if DEBUG
-    LOG("raspicomm: kernel module initialization");
-  #endif
+  LOG("kernel module initialization");
 
   raspicommDriver = alloc_tty_driver(1);
 
@@ -267,7 +265,7 @@ static int __init raspicomm_init(void)
   // try to register the tty driver
   if (tty_register_driver(raspicommDriver))
   {
-    LOG("raspicomm: tty_register_driver failed");
+    LOG("tty_register_driver failed");
     put_tty_driver(raspicommDriver);
     return -1; // return if registration fails
   }
@@ -283,7 +281,7 @@ static void __exit raspicomm_exit(void)
 {
   // unregister the driver
   if (tty_unregister_driver(raspicommDriver))
-    LOG("raspicomm: tty_unregister_driver failed");
+    LOG("tty_unregister_driver failed");
 
   put_tty_driver(raspicommDriver);
 
@@ -297,7 +295,7 @@ static void __exit raspicomm_exit(void)
   raspicomm_spi0_deinit_gpio();
 
   // log the unloading of the rs-485 module
-  LOG("raspicomm: kernel module exit");
+  LOG("kernel module exit");
 }
 
 // Helper function that calculates the size of the free buffer remaining
@@ -361,9 +359,7 @@ static void raspicomm_max3140_configure(speed_t speed, Databits databits, Stopbi
   int swBacksleep = raspicomm_max3140_get_swbacksleep(speed), 
       config = raspicomm_max3140_get_uart_config(speed, databits, stopbits, parity);
 
-  #if DEBUG
-    printk ( KERN_INFO "raspicomm: raspicomm_max3140_configure() called speed=%i, databits=%i, stopbits=%i, parity=%i => config: %X, swBacksleep: %i", speed, databits, stopbits, parity, config, swBacksleep);
-  #endif
+  LOG( "raspicomm_max3140_configure() called speed=%i, databits=%i, stopbits=%i, parity=%i => config: %X, swBacksleep: %i", speed, databits, stopbits, parity, config, swBacksleep);
 
   SpiConfig = config;
   SwBacksleep = swBacksleep;
@@ -403,9 +399,7 @@ static int raspicomm_max3140_get_parity_flag(char c)
    else
      ret = (count % 2) ? 0 : MAX3140_wd_Pt;  
 
-   #if DEBUG
-     printk( KERN_INFO "raspicomm: raspicomm_max3140_get_parity_flag(c=%c) parityEven=%i, count=%i, ret=%i", c, parityEven, count, ret );
-   #endif
+   LOG ( "raspicomm_max3140_get_parity_flag(c=%c) parityEven=%i, count=%i, ret=%i", c, parityEven, count, ret );
 
    return ret;
  }
@@ -444,9 +438,7 @@ static int raspicomm_spi0_send(unsigned int mosi)
   unsigned char v1,v2;
   int status;
 
-  #if DEBUG
-    printk ( KERN_INFO "raspicomm: raspicomm_spi0_send(%X): %X spi0+1 %X spi0+2 %X", mosi, SPI0_CNTLSTAT, SPI0_FIFO, SPI0_CLKSPEED );
-  #endif
+  LOG ( "raspicomm_spi0_send(%X): %X spi0+1 %X spi0+2 %X", mosi, SPI0_CNTLSTAT, SPI0_FIFO, SPI0_CLKSPEED );
 
   // Set up for single ended, MS comes out first
   v1 = mosi >> 8;
@@ -510,11 +502,8 @@ volatile static unsigned int* raspicomm_spi0_init_mem(void)
   // call ioremap to map the physical address to something we can use
   unsigned int* p = ioremap(SPI0_BASE, 12);
 
-  #if DEBUG
-    printk( KERN_INFO "raspicomm: ioremap(%X) returned %X", SPI0_BASE, (int)p);
-
-    printk ( KERN_INFO "raspicomm: spi0: %X spi0+1 %X spi0+2 %X", *p, *(p+1), *(p+2) );
-  #endif  
+  LOG( "ioremap(%X) returned %X", SPI0_BASE, (int)p);
+  LOG( "spi0: %X spi0+1 %X spi0+2 %X", *p, *(p+1), *(p+2) );
 
   return p;
 }
@@ -527,9 +516,7 @@ void raspicomm_irq_work_queue_handler(void *arg)
   // lock on the transmit queue
   mutex_lock( &SpiLock );
 
-  // #if DEBUG
-  //   printk( KERN_INFO "raspicomm: raspicomm_irq_handler (%i)", irq);
-  // #endif
+  //LOG( "raspicomm_irq_handler called");
 
   // issue a read command to discover the cause of the interrupt
   rxdata = raspicomm_spi0_send(0);
@@ -598,10 +585,8 @@ static void raspicomm_spi0_init_gpio_alt(int gpio, int alt)
 {
   volatile unsigned int* p;
   int address;
-  
-  #if DEBUG
-    printk( KERN_INFO "raspicomm: raspicomm_spi0_init_gpio_alt(gpio=%i, alt=%i) called", gpio, alt);
-  #endif
+
+  LOG( "raspicomm_spi0_init_gpio_alt(gpio=%i, alt=%i) called", gpio, alt);
 
   // calc the memory address for manipulating the gpio
   address = GPIO_BASE + (4 * (gpio / 10) );
@@ -611,9 +596,8 @@ static void raspicomm_spi0_init_gpio_alt(int gpio, int alt)
 
   // if the mapping was successful
   if (p != NULL) {
-    #if DEBUG
-      printk ( KERN_INFO "raspicomm: ioremap returned %X", (int)p );
-    #endif
+
+    LOG( "ioremap returned %X", (int)p );
 
     // set the gpio to the alternative mapping
     (*p) |= (((alt) <= 3 ? (alt) + 4 : (alt) == 4 ? 3 : 2) << (((gpio)%10)*3));
@@ -628,18 +612,15 @@ static int raspicomm_spi0_init_gpio()
 {
   int i, length = sizeof(GpioConfigs) / sizeof(gpioconfig), ret = SUCCESS;
 
-  #if DEBUG
-    printk ( KERN_INFO "raspicomm: raspicomm_spi0_init_gpio() called with %i gpios", length );
-  #endif
+  LOG ( "raspicomm_spi0_init_gpio() called with %i gpios", length );
 
   for (i = 0; i < length; i++)
   {
     if ( gpio_request_one( GpioConfigs[i].gpio, GPIOF_IN, "SPI" ) == 0 )
     {
       GpioConfigs[i].gpio_requested = GpioConfigs[i].gpio; // mark the gpio as successfully requested
-      #if DEBUG
-        printk( KERN_INFO "raspicomm: gpio_request_one(%i) succeeded", GpioConfigs[i].gpio);
-      #endif
+
+      LOG ( "gpio_request_one(%i) succeeded", GpioConfigs[i].gpio);
 
       // set the alternative function according      
       raspicomm_spi0_init_gpio_alt( GpioConfigs[i].gpio, GpioConfigs[i].gpio_alternative );
@@ -662,18 +643,15 @@ static void raspicomm_spi0_deinit_gpio()
 {
   int i, length = sizeof(GpioConfigs) / sizeof(gpioconfig);
  
-  #if DEBUG
-    printk( KERN_INFO "raspicomm: raspicomm_spi0_deinit_gpio() called" );
-  #endif
+  LOG( "raspicomm_spi0_deinit_gpio() called" );
 
   // frees all gpios that we successfully requested  
   for (i = 0; i < length; i++)
   {
     if ( GpioConfigs[i].gpio_requested ) 
     {
-      #if DEBUG
-        printk( KERN_INFO "raspicomm: Freeing gpio %i", GpioConfigs[i].gpio_requested );
-      #endif
+      LOG( "Freeing gpio %i", GpioConfigs[i].gpio_requested );
+
       gpio_free( GpioConfigs[i].gpio_requested );
       GpioConfigs[i].gpio_requested = 0;
 
@@ -721,9 +699,7 @@ static int raspicomm_spi0_init_irq(void)
     return -1;
   }
 
-  #if DEBUG
-    printk( KERN_INFO "raspicomm: raspicomm_spi0_init_irq completed successfully");
-  #endif
+  LOG ( "raspicomm_spi0_init_irq completed successfully");
 
   return SUCCESS;
 }
@@ -737,18 +713,18 @@ static void raspicomm_spi0_deinit_irq()
   if (irq > 0)  {
 
     // disable the irq first
-    LOG( "raspicomm: Disabling irq ");
+    LOG( "Disabling irq ");
     disable_irq(irq);
 
     // free the irq
-    LOG( "raspicomm: Freeing irq" );
+    LOG( "Freeing irq" );
     free_irq(irq, (void*)(raspicomm_irq_handler));
     Gpio17_Irq = 0;
   }
 
   // if we've got a valid gpio, free it
   if (gpio > 0) {
-    LOG ( "raspicomm: Freeing gpio" );
+    LOG ( "Freeing gpio" );
     gpio_free(gpio);
     Gpio = 0;
   }
@@ -778,9 +754,7 @@ static void raspicomm_spi0_deinit_mem(volatile unsigned int* spi0)
 // this function pushes a received character to the opened tty device, called by the interrupt function
 static void raspicomm_rs485_received(struct tty_struct* tty, char c)
 {
-  #if DEBUG
-    printk( KERN_INFO "raspicomm: raspicomm_rs485_received(c=%c)", c);
-  #endif
+  LOG( "raspicomm_rs485_received(c=%c)", c);
 
   if (tty != NULL)
   {
@@ -808,21 +782,17 @@ static void raspicomm_rs485_received(struct tty_struct* tty, char c)
 // called by the kernel when open() is called for the device
 static int raspicommDriver_open(struct tty_struct* tty, struct file* file)
 {
-  LOG("raspicomm: raspicommDriver_open() called");
+  LOG("raspicommDriver_open() called");
 
   if (OpenCount++)
   {
-    #if DEBUG
-      printk( KERN_INFO "raspicomm: raspicommDriver_open() was not successful as OpenCount = %i", OpenCount);
-    #endif
+    LOG( "raspicommDriver_open() was not successful as OpenCount = %i", OpenCount);
 
     return -ENODEV;
   }
   else
   {
-    #if DEBUG
-      printk( KERN_INFO "raspicomm: raspicommDriver_open() was successful");
-    #endif
+    LOG( "raspicommDriver_open() was successful");
 
     OpenTTY = tty;
 
@@ -838,20 +808,16 @@ static int raspicommDriver_open(struct tty_struct* tty, struct file* file)
 // called by the kernel when close() is called for the device
 static void raspicommDriver_close(struct tty_struct* tty, struct file* file)
 {
-  LOG("raspicomm: raspicommDriver_close called");
+  LOG("raspicommDriver_close called");
 
   if (--OpenCount)
   {
-    #if DEBUG
-      printk ( KERN_INFO "raspicomm: device was not closed, as an open count is %i", OpenCount);
-    #endif
+    LOG( "device was not closed, as an open count is %i", OpenCount);
   }
-  else    
+  else
   {
     OpenTTY = NULL;
-    #if DEBUG
-      printk ( KERN_INFO "raspicomm: device was closed");
-    #endif
+    LOG( "device was closed");
   }
 }
 
@@ -864,9 +830,7 @@ static int raspicommDriver_write(struct tty_struct* tty,
   int receive;
   // int txdata;
 
-  #if DEBUG
-    printk(KERN_INFO "raspicomm: raspicommDriver_write(count=%i)\n", count);
-  #endif
+  LOG ("raspicommDriver_write(count=%i)\n", count);
 
   mutex_lock(&SpiLock);
 
@@ -903,21 +867,19 @@ static int raspicommDriver_write_room(struct tty_struct * tty)
 {
   int length = raspicomm_get_free_write_buffer_length();
 
-  #if DEBUG
-    printk(KERN_INFO "raspicomm: raspicommDriver_write_room() returns %i", length);
-  #endif
+  LOG("raspicommDriver_write_room() returns %i", length);
 
   return length;
 }
 
 static void raspicommDriver_flush_buffer(struct tty_struct * tty)
 {
-  LOG("raspicomm: raspicommDriver_flush_buffer called");
+  LOG("raspicommDriver_flush_buffer called");
 }
 
 static int raspicommDriver_chars_in_buffer(struct tty_struct * tty)
 {
-  LOG("raspicomm: raspicommDriver_chars_in_buffer called");
+  LOG("raspicommDriver_chars_in_buffer called");
   return 0;
 }
 
@@ -927,7 +889,7 @@ static void raspicommDriver_set_termios(struct tty_struct* tty, struct ktermios*
   int cflag;
   speed_t baudrate; Databits databits; Parity parity; Stopbits stopbits;
 
-  LOG("raspicomm: raspicommDriver_set_termios() called");
+  LOG("raspicommDriver_set_termios() called");
 
   // get the baudrate
   baudrate = tty_get_baud_rate(tty);
@@ -975,22 +937,22 @@ static void raspicommDriver_set_termios(struct tty_struct* tty, struct ktermios*
 
 static void raspicommDriver_stop(struct tty_struct * tty)
 {
-  LOG("raspicomm: raspicommDriver_stop called");
+  LOG("raspicommDriver_stop called");
 }
 
 static void raspicommDriver_start(struct tty_struct * tty)
 {
-  LOG("raspicomm: raspicommDriver_start called");
+  LOG("raspicommDriver_start called");
 }
 
 static void raspicommDriver_hangup(struct tty_struct * tty)
 {
-  LOG("raspicomm: raspicommDriver_hangup called");
+  LOG("raspicommDriver_hangup called");
 }
 
 static int raspicommDriver_tiocmget(struct tty_struct *tty)
 {
-  LOG("raspicomm: raspicommDriver_tiocmget called");
+  LOG("raspicommDriver_tiocmget called");
   return 0;
 }
 
@@ -998,7 +960,7 @@ static int raspicommDriver_tiocmset(struct tty_struct *tty,
                               unsigned int set, 
                               unsigned int clear)
 {
-  LOG("raspicomm: raspicommDriver_tiocmset called");
+  LOG("raspicommDriver_tiocmset called");
   return 0;
 }
 
@@ -1011,9 +973,7 @@ static int raspicommDriver_ioctl(struct tty_struct* tty,
 
   // LOG("raspicomm: raspicommDriver_ioctl called");
 
-#if DEBUG
-  printk(KERN_INFO "raspicomm: raspicommDriver_ioctl() called with cmd=%i, arg=%li", cmd, arg);
-#endif
+  LOG ("raspicommDriver_ioctl() called with cmd=%i, arg=%li", cmd, arg);
 
   switch (cmd)
   {

@@ -16,18 +16,11 @@ MODULE_SUPPORTED_DEVICE("ttyRPC");
 // ****************************************************************************
 
 // outputs verbose debug information
-#define DEBUG 0
+#define DEBUG
 
 // if DEBUG is defined, log using printk(), else do nothing
-#if DEBUG
-
-  #define LOG(x) \
-  do { \
-      printk(KERN_INFO x); \
-  } while(0);
-
+#ifdef DEBUG
+  #define LOG(fmt, args...) do { printk( KERN_DEBUG "rpc: " fmt "\n", ## args); } while(0)
 #else
-
-  #define LOG(x)
-
+  #define LOG(fmt, args...)
 #endif
