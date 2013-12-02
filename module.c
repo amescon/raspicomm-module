@@ -153,19 +153,19 @@ static int  raspicommDriver_ioctl(struct tty_struct* tty,
 // **** START raspicomm private fields ****
 // ****************************************************************************
 static const struct tty_operations raspicomm_ops = {
-  .open = raspicommDriver_open,
-  .close = raspicommDriver_close,
-  .write = raspicommDriver_write,
-  .write_room = raspicommDriver_write_room,
-  .flush_buffer =raspicommDriver_flush_buffer,
+  .open            = raspicommDriver_open,
+  .close           = raspicommDriver_close,
+  .write           = raspicommDriver_write,
+  .write_room      = raspicommDriver_write_room,
+  .flush_buffer    =raspicommDriver_flush_buffer,
   .chars_in_buffer = raspicommDriver_chars_in_buffer,
-  .ioctl = raspicommDriver_ioctl,
-  .set_termios = raspicommDriver_set_termios,
-  .stop= raspicommDriver_stop,
-  .start = raspicommDriver_start,
-  .hangup = raspicommDriver_hangup,
-  .tiocmget = raspicommDriver_tiocmget,
-  .tiocmset = raspicommDriver_tiocmset
+  .ioctl           = raspicommDriver_ioctl,
+  .set_termios     = raspicommDriver_set_termios,
+  .stop            = raspicommDriver_stop,
+  .start           = raspicommDriver_start,
+  .hangup          = raspicommDriver_hangup,
+  .tiocmget        = raspicommDriver_tiocmget,
+  .tiocmset        = raspicommDriver_tiocmset
 };
 
 #define IRQ_DEV_NAME "raspicomm"
