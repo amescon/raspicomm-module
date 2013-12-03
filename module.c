@@ -269,7 +269,10 @@ static int __init raspicomm_init(void)
   // initialize the spi0
   raspicomm_spi0_init();
 
-  return 0;
+  LOG ("raspicomm_init() completed");
+
+  /* successfully initialized the module */
+  return 0; 
 }
 
 // cleanup function that gets called when the module is unloaded
