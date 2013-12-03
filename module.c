@@ -234,10 +234,11 @@ static int __init raspicomm_init(void)
   // log the start of the initialization
   LOG("kernel module initialization");
 
-  raspicommDriver = alloc_tty_driver(1);
+  /* allocate the driver */
+  raspicommDriver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW );
 
-  // return if allocation fails
-  if (!raspicommDriver)
+  /* return if allocation fails */
+  if (IS_ERR(raspicommDriver))
     return -ENOMEM;
 
   // init the driver
