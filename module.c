@@ -4,21 +4,14 @@
 #include <linux/fs.h>         // Needed for the file structure & register_chrdev()
 #include <linux/tty.h>        // 
 #include <linux/tty_driver.h> // Needed for struct tty_driver
-
 #include <linux/gpio.h>       // needed for gpio_X() calls
-
 #include <linux/interrupt.h>  // Needed for request_interrupt()
 #include <linux/workqueue.h>
-
 #include <linux/delay.h>      // Needed for udelay
-
-#include <linux/tty_flip.h> 
+#include <linux/tty_flip.h>
 #include <linux/serial.h>
-
 #include <asm/io.h>           // Needed for ioremap & iounmap
-
 #include <asm/uaccess.h>
-
 #include "module.h"
 #include "queue.h"     // needed for queue_xxx functions
 
