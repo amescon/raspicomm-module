@@ -17,7 +17,6 @@
 
 #include <asm/io.h>           // Needed for ioremap & iounmap
 
-#include <asm/io.h>
 #include <asm/uaccess.h>
 
 #include "module.h"
