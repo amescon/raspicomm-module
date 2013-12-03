@@ -140,11 +140,6 @@ static int  raspicommDriver_tiocmset(struct tty_struct *tty,
 static int  raspicommDriver_ioctl(struct tty_struct* tty,
                                   unsigned int cmd,
                                   unsigned int long arg);
-// static void raspicommDriver_poll(unsigned long);
-// static void raspicommDriver_set_tty_param(struct tty_struct *, struct ktermios *);
-// static void raspicommDriver_shutdown(struct tty_port *);
-// static int raspicommDriver_carrier_raised(struct tty_port *);
-// static void raspicommDriver_dtr_rts(struct tty_port *, int);
 // ****************************************************************************
 // **** END raspicommDriver functions ****
 // ****************************************************************************
@@ -990,27 +985,6 @@ static int raspicommDriver_ioctl(struct tty_struct* tty,
 
   return ret;
 }
-
-// static void raspicommDriver_poll(unsigned long ignored)
-// {
-// }
-
-// static void raspicommDriver_set_tty_param(struct tty_struct * tty, struct ktermios * kt)
-// {
-// }
-
-// static void raspicommDriver_shutdown(struct tty_port * port)
-// {
-// }
-
-// static int raspicommDriver_carrier_raised(struct tty_port * port)
-// {
-//   return 0;
-// }
-
-// static void raspicommDriver_dtr_rts(struct tty_port * port, int onoff)
-// {
-// }
 
 // ****************************************************************************
 // **** END raspicommDriver interface functions ****
