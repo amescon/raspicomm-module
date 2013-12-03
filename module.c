@@ -749,9 +749,6 @@ static void raspicomm_rs485_received(struct tty_struct* tty, char c)
 
   if (tty != NULL)
   {
-    // check if we need to flip the buffer before inserting a char
-    // if (tty->flip.count >= TTY_FLIPBUF_SIZE)
-    //   tty_flip_buffer_push(tty);
 
     // send the character to the tty
     tty_insert_flip_char(tty, c, TTY_NORMAL);
