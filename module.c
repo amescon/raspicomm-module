@@ -10,6 +10,7 @@
 #include <linux/delay.h>      // Needed for udelay
 #include <linux/tty_flip.h>
 #include <linux/serial.h>
+#include <linux/version.h>    /* needed for KERNEL_VERSION() macro */
 #include <asm/io.h>           // Needed for ioremap & iounmap
 #include <asm/uaccess.h>
 #include "module.h"
@@ -226,12 +227,21 @@ static int __init raspicomm_init(void)
   // log the start of the initialization
   LOG("kernel module initialization");
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
   /* allocate the driver */
   raspicommDriver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW );
 
   /* return if allocation fails */
   if (IS_ERR(raspicommDriver))
     return -ENOMEM;
+#else
+  /* allocate the driver */
+  raspicommDriver = alloc_tty_driver(1);
+
+  /* return if allocation fails */
+  if (!raspicommDriver)
+    return -ENOMEM;
+#endif
 
   // init the driver
   raspicommDriver->driver_name           = "raspicomm rs485";
@@ -747,15 +757,25 @@ static void raspicomm_rs485_received(struct tty_struct* tty, char c)
 {
   LOG( "raspicomm_rs485_received(c=%c)", c);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+  if (tty != NULL && tty->port != NULL)
+  {
+    // send the character to the tty
+    tty_insert_flip_char(tty->port, c, TTY_NORMAL);
+
+    // tell it to flip the buffer
+    tty_flip_buffer_push(tty->port);
+  }
+#else
   if (tty != NULL)
   {
-
     // send the character to the tty
     tty_insert_flip_char(tty, c, TTY_NORMAL);
 
     // tell it to flip the buffer
     tty_flip_buffer_push(tty);
   }
+#endif
 
 }
 
@@ -883,7 +903,11 @@ static void raspicommDriver_set_termios(struct tty_struct* tty, struct ktermios*
   baudrate = tty_get_baud_rate(tty);
 
   // get the cflag
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+  cflag = tty->termios.c_cflag;
+#else
   cflag = tty->termios->c_cflag;
+#endif
 
   // get the databits
   switch ( cflag & CSIZE )
