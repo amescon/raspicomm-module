@@ -278,6 +278,8 @@ static int __init raspicomm_init(void)
 // cleanup function that gets called when the module is unloaded
 static void __exit raspicomm_exit(void)
 {
+  LOG ("raspicomm_exit() called");
+
   // unregister the driver
   if (tty_unregister_driver(raspicommDriver))
     LOG("tty_unregister_driver failed");
