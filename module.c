@@ -176,7 +176,7 @@ static int ParityIsEven = 1;
 static int ParityEnabled = 0;
 
 // currently opened tty device
-static struct tty_struct* OpenTTY;
+static struct tty_struct* OpenTTY = NULL;
 
 // transmit queue
 static struct queue TxQueue;
