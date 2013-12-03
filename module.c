@@ -246,18 +246,18 @@ static int __init raspicomm_init(void)
     return -ENOMEM;
 
   // init the driver
-  raspicommDriver->driver_name = "raspicomm rs485";
-  raspicommDriver->name = "ttyRPC";
-  raspicommDriver->major = RaspicommMajorDriverNumber;
-  raspicommDriver->minor_start = 0;
-  raspicommDriver->num = 1;
-  raspicommDriver->flags = TTY_DRIVER_REAL_RAW;
-  raspicommDriver->type = TTY_DRIVER_TYPE_SERIAL;
-  raspicommDriver->subtype = SERIAL_TYPE_NORMAL;
-  raspicommDriver->init_termios = tty_std_termios;
+  raspicommDriver->driver_name           = "raspicomm rs485";
+  raspicommDriver->name                  = "ttyRPC";
+  raspicommDriver->major                 = RaspicommMajorDriverNumber;
+  raspicommDriver->minor_start           = 0;
+  raspicommDriver->num                   = 1;
+  raspicommDriver->flags                 = TTY_DRIVER_REAL_RAW;
+  raspicommDriver->type                  = TTY_DRIVER_TYPE_SERIAL;
+  raspicommDriver->subtype               = SERIAL_TYPE_NORMAL;
+  raspicommDriver->init_termios          = tty_std_termios;
   raspicommDriver->init_termios.c_ispeed = 9600;
   raspicommDriver->init_termios.c_ospeed = 9600;
-  raspicommDriver->init_termios.c_cflag = B9600 | CREAD | CS8 | CLOCAL;
+  raspicommDriver->init_termios.c_cflag  = B9600 | CREAD | CS8 | CLOCAL;
 
   // initialize function callbacks of tty_driver, necessary before tty_register_driver()
   tty_set_operations(raspicommDriver, &raspicomm_ops);
@@ -397,7 +397,7 @@ static int raspicomm_max3140_get_parity_flag(char c)
    if (parityEven)
      ret = (count % 2) ? MAX3140_wd_Pt : 0;
    else
-     ret = (count % 2) ? 0 : MAX3140_wd_Pt;  
+     ret = (count % 2) ? 0 : MAX3140_wd_Pt;
 
    LOG ( "raspicomm_max3140_get_parity_flag(c=%c) parityEven=%i, count=%i, ret=%i", c, parityEven, count, ret );
 
@@ -476,7 +476,7 @@ static int raspicomm_spi0_send(unsigned int mosi)
 static void raspicomm_spi0_init(void)
 {
   // map the spi0 memory
-  Spi0 = raspicomm_spi0_init_mem();  
+  Spi0 = raspicomm_spi0_init_mem();
 
   // initialize the spi0
   raspicomm_spi0_init_port();
