@@ -632,11 +632,6 @@ static int raspicomm_spi0_init_gpio()
     }
   }
 
-  #if DEBUG
-  if ( ret == SUCCESS )
-    printk ( KERN_INFO "raspicomm: raspicomm_spi0_init_gpio() returned successfully" );
-  #endif
-
   return ret;
 }
 
