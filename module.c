@@ -234,7 +234,7 @@ static int __init raspicomm_init(void)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
   /* allocate the driver */
-  raspicommDriver = tty_alloc_driver(PORT_COUNT, TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
+  raspicommDriver = tty_alloc_driver(PORT_COUNT, TTY_DRIVER_REAL_RAW);
 
   /* return if allocation fails */
   if (IS_ERR(raspicommDriver))
@@ -254,7 +254,7 @@ static int __init raspicomm_init(void)
   raspicommDriver->name                  = "ttyRPC";
   raspicommDriver->major                 = RaspicommMajorDriverNumber;
   raspicommDriver->minor_start           = 0;
-  raspicommDriver->flags                 = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
+  raspicommDriver->flags                 = TTY_DRIVER_REAL_RAW;
   raspicommDriver->type                  = TTY_DRIVER_TYPE_SERIAL;
   raspicommDriver->subtype               = SERIAL_TYPE_NORMAL;
   raspicommDriver->init_termios          = tty_std_termios;
@@ -276,9 +276,6 @@ static int __init raspicomm_init(void)
     return -1; // return if registration fails
   }
 
-  /* register the tty device */
-  tty_register_device(raspicommDriver, 0, NULL);
-
   // initialize the spi0
   raspicomm_spi0_init();
 
@@ -292,8 +289,6 @@ static int __init raspicomm_init(void)
 static void __exit raspicomm_exit(void)
 {
   LOG ("raspicomm_exit() called");
-
-  tty_unregister_device(raspicommDriver, 0);
 
   // unregister the driver
   if (tty_unregister_driver(raspicommDriver))
