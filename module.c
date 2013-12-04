@@ -161,6 +161,7 @@ static const struct tty_operations raspicomm_ops = {
 
 // the driver instance
 static struct tty_driver* raspicommDriver;
+static struct tty_port Port;
 
 // the number of open() calls
 static int OpenCount = 0;
@@ -228,9 +229,12 @@ static int __init raspicomm_init(void)
   // log the start of the initialization
   LOG("kernel module initialization");
 
+  /* initialize the port */
+  tty_port_init(&Port);
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
   /* allocate the driver */
-  raspicommDriver = tty_alloc_driver(PORT_COUNT, TTY_DRIVER_REAL_RAW);
+  raspicommDriver = tty_alloc_driver(PORT_COUNT, TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
 
   /* return if allocation fails */
   if (IS_ERR(raspicommDriver))
@@ -245,11 +249,12 @@ static int __init raspicomm_init(void)
 #endif
 
   // init the driver
+  raspicommDriver->owner                 = THIS_MODULE;
   raspicommDriver->driver_name           = "raspicomm rs485";
   raspicommDriver->name                  = "ttyRPC";
   raspicommDriver->major                 = RaspicommMajorDriverNumber;
   raspicommDriver->minor_start           = 0;
-  raspicommDriver->flags                 = TTY_DRIVER_REAL_RAW;
+  raspicommDriver->flags                 = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
   raspicommDriver->type                  = TTY_DRIVER_TYPE_SERIAL;
   raspicommDriver->subtype               = SERIAL_TYPE_NORMAL;
   raspicommDriver->init_termios          = tty_std_termios;
@@ -259,6 +264,9 @@ static int __init raspicomm_init(void)
 
   // initialize function callbacks of tty_driver, necessary before tty_register_driver()
   tty_set_operations(raspicommDriver, &raspicomm_ops);
+
+  /* link the port with the driver */
+  tty_port_link_device(&Port, raspicommDriver, 0);
   
   // try to register the tty driver
   if (tty_register_driver(raspicommDriver))
@@ -267,7 +275,10 @@ static int __init raspicomm_init(void)
     put_tty_driver(raspicommDriver);
     return -1; // return if registration fails
   }
-  
+
+  /* register the tty device */
+  tty_register_device(raspicommDriver, 0, NULL);
+
   // initialize the spi0
   raspicomm_spi0_init();
 
@@ -281,6 +292,8 @@ static int __init raspicomm_init(void)
 static void __exit raspicomm_exit(void)
 {
   LOG ("raspicomm_exit() called");
+
+  tty_unregister_device(raspicommDriver, 0);
 
   // unregister the driver
   if (tty_unregister_driver(raspicommDriver))
