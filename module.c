@@ -161,7 +161,10 @@ static const struct tty_operations raspicomm_ops = {
 
 // the driver instance
 static struct tty_driver* raspicommDriver;
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
 static struct tty_port Port;
+#endif
 
 // the number of open() calls
 static int OpenCount = 0;
@@ -229,10 +232,11 @@ static int __init raspicomm_init(void)
   // log the start of the initialization
   LOG("kernel module initialization");
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+
   /* initialize the port */
   tty_port_init(&Port);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
   /* allocate the driver */
   raspicommDriver = tty_alloc_driver(PORT_COUNT, TTY_DRIVER_REAL_RAW);
 
@@ -265,8 +269,10 @@ static int __init raspicomm_init(void)
   // initialize function callbacks of tty_driver, necessary before tty_register_driver()
   tty_set_operations(raspicommDriver, &raspicomm_ops);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
   /* link the port with the driver */
   tty_port_link_device(&Port, raspicommDriver, 0);
+#endif
   
   // try to register the tty driver
   if (tty_register_driver(raspicommDriver))
