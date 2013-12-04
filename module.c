@@ -157,6 +157,7 @@ static const struct tty_operations raspicomm_ops = {
 };
 
 #define IRQ_DEV_NAME "raspicomm"
+#define PORT_COUNT 1
 
 // the driver instance
 static struct tty_driver* raspicommDriver;
@@ -229,14 +230,14 @@ static int __init raspicomm_init(void)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
   /* allocate the driver */
-  raspicommDriver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW );
+  raspicommDriver = tty_alloc_driver(PORT_COUNT, TTY_DRIVER_REAL_RAW);
 
   /* return if allocation fails */
   if (IS_ERR(raspicommDriver))
     return -ENOMEM;
 #else
   /* allocate the driver */
-  raspicommDriver = alloc_tty_driver(1);
+  raspicommDriver = alloc_tty_driver(PORT_COUNT);
 
   /* return if allocation fails */
   if (!raspicommDriver)
