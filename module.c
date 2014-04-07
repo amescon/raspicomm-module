@@ -224,7 +224,7 @@ module_exit(raspicomm_exit);
 // **** START raspicomm private function implementations
 // ****************************************************************************
 // initialization function that gets called when the module is loaded
-static int __init raspicomm_init(void)
+static int __init raspicomm_init()
 {
   Gpio = Gpio17_Irq = -EINVAL;;
   SpiConfig = 0;
@@ -292,7 +292,7 @@ static int __init raspicomm_init(void)
 }
 
 // cleanup function that gets called when the module is unloaded
-static void __exit raspicomm_exit(void)
+static void __exit raspicomm_exit()
 {
   LOG ("raspicomm_exit() called");
 
@@ -316,7 +316,7 @@ static void __exit raspicomm_exit(void)
 }
 
 // Helper function that calculates the size of the free buffer remaining
-static int raspicomm_get_free_write_buffer_length(void)
+static int raspicomm_get_free_write_buffer_length()
 {
   int room;
 
@@ -383,7 +383,7 @@ static void raspicomm_max3140_configure(speed_t speed, Databits databits, Stopbi
 }
 
 // initializes the spi0 for supplied configuration
-static void raspicomm_max3140_apply_config(void)
+static void raspicomm_max3140_apply_config()
 { 
   mutex_lock ( &SpiLock );
   raspicomm_spi0_send( SpiConfig );
@@ -669,7 +669,7 @@ static void raspicomm_spi0_deinit_gpio()
   }
 }
 
-static int raspicomm_spi0_init_irq(void)
+static int raspicomm_spi0_init_irq()
 {  
   // the interrupt number and gpio number
   int irq, io = 17;
