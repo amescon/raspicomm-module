@@ -177,7 +177,7 @@ static int ParityEnabled = 0;
 static struct tty_struct* OpenTTY = NULL;
 
 // transmit queue
-static struct queue TxQueue;
+static queue_t TxQueue;
 
 // mutex to secure the spi data transfer
 static DEFINE_MUTEX( SpiLock );
@@ -555,11 +555,8 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
   if ((rxdata & MAX3140_UART_T) && (SpiConfig & MAX3140_UART_TM))
   {
 
-
-    if (!queue_is_empty(&TxQueue))
+    if (queue_dequeue(&TxQueue, &txdata))
     {
-      txdata = queue_dequeue(&TxQueue);
-
       // parity flag
       // raspicomm_spi0_send( MAX3140_UART_TM | txdata | raspicomm_max3140_get_parity_flag((char)txdata) );
       
@@ -845,6 +842,7 @@ static int raspicommDriver_write(struct tty_struct* tty,
 {
   int bytes_written = 0;
   int receive;
+  int aux;
   // int txdata;
 
   LOG ("raspicommDriver_write(count=%i)\n", count);
@@ -867,10 +865,9 @@ static int raspicommDriver_write(struct tty_struct* tty,
     // txdata = queue_dequeue(&TxQueue);
     
     // javicient
-    
-    char aux = queue_dequeue(&TxQueue);
-    
-    raspicomm_spi0_send( 0x8000 | aux | raspicomm_max3140_get_parity_flag(aux));
+
+    if (queue_dequeue(&TxQueue, &aux))
+      raspicomm_spi0_send( 0x8000 | aux | raspicomm_max3140_get_parity_flag(aux));
     // raspicomm_spi0_send( 0x8000 |  txdata | raspicomm_max3140_get_parity_flag((char)txdata));
   }
     
