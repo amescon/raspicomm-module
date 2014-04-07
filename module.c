@@ -538,40 +538,31 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
   // issue a read command to discover the cause of the interrupt
   rxdata = raspicomm_spi0_send(0);
 
-  // read the data 
-  while(rxdata & MAX3140_UART_R) // while we are receiving
+  /* if data is available in the receive register */
+  if (rxdata & MAX3140_UART_R)
   {
     // handle the received data
     raspicomm_rs485_received( OpenTTY, rxdata & 0x00FF );
-
-    // get the next rxdata
-    rxdata = raspicomm_spi0_send(0);
   }
 
-  // write the data
-  if ((rxdata & MAX3140_UART_T) && (SpiConfig & MAX3140_UART_TM))
+  /* if the transmit buffer is empty */
+  if ((rxdata & MAX3140_UART_T) /* && (SpiConfig & MAX3140_UART_TM)*/ )
   {
-
+    /* get the data to send from the transmit queue */
     if (queue_dequeue(&TxQueue, &txdata))
     {
-      // parity flag
-      // raspicomm_spi0_send( MAX3140_UART_TM | txdata | raspicomm_max3140_get_parity_flag((char)txdata) );
-      
-      // raspicomm_spi0_send( 0x8000| txdata );
-      
-      // javicient
       raspicomm_spi0_send(MAX3140_UART_R | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
     }
     else
     {
-      // mask transmit buffer empty interrupt
-      SpiConfig = SpiConfig & ~0x0800; // clear the TM bit
-      SpiConfig = SpiConfig | 0xc000; // set bits 15 and 14
-      raspicomm_spi0_send(SpiConfig);
+      /* set bits R + T (bit 15 + bit 14) and clear TM (bit 11) transmit buffer empty */
+      raspicomm_spi0_send(SpiConfig = (SpiConfig | MAX3140_UART_R | MAX3140_UART_T) & ~MAX3140_UART_TM);
 
-      udelay(SwBacksleep); // there is no usleep function in the kernel
+      /* wait */
+      udelay(SwBacksleep);
 
-      raspicomm_spi0_send(0x8600); // enable receive by disabling RTS (TE set so that no data is sent)
+      /* enable receive by disabling RTS (TE set so that no data is sent)*/
+      raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE); //raspicomm_spi0_send(0x8600);
     }
   }
 
@@ -848,25 +839,27 @@ static int raspicommDriver_write(struct tty_struct* tty,
   // insert them into the transmit queue
   for (bytes_written = 0; bytes_written < count; bytes_written++)
   {
-    if (queue_enqueue(&TxQueue, buf[bytes_written]) < 0)
+    if (!queue_enqueue(&TxQueue, buf[bytes_written]))
+    {
+      LOG_INFO("failed to queue data");
       break;
+    }
   }
 
-  // SpiConfig = SpiConfig | 0xC800; // set bit 15, 14, TM bit
-  SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM;
-  receive = raspicomm_spi0_send( SpiConfig );
+  receive = raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM ) );
+
+  udelay(SwBacksleep);
 
   if (receive & MAX3140_UART_T) // transmit buffer is ready to accept data
   {
-    // txdata = queue_dequeue(&TxQueue);
-    
-    // javicient
+    LOG("ready to accept data");
 
+    // javicient
     if (queue_dequeue(&TxQueue, &aux))
-      raspicomm_spi0_send( 0x8000 | aux | raspicomm_max3140_get_parity_flag(aux));
-    // raspicomm_spi0_send( 0x8000 |  txdata | raspicomm_max3140_get_parity_flag((char)txdata));
+      /* write data (R set, T not set) */
+      raspicomm_spi0_send( MAX3140_UART_R | aux | raspicomm_max3140_get_parity_flag(aux));
   }
-    
+
   mutex_unlock(&SpiLock);
 
   return bytes_written;
