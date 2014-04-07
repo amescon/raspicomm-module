@@ -392,8 +392,12 @@ static void raspicomm_max3140_configure(speed_t speed, Databits databits, Stopbi
 static void raspicomm_max3140_apply_config()
 { 
   mutex_lock ( &SpiLock );
+
   raspicomm_spi0_send( SpiConfig );
-  raspicomm_spi0_send( 0x8600 ); // enable receive by disabling RTS (TE set so that no data is sent)
+
+  /* write data (R set, T not set) and enable receive by disabling RTS (TE set so that no data is sent) */
+  raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_TE | MAX3140_WRITE_DATA_RTS);
+
   mutex_unlock ( &SpiLock );
 }
 
