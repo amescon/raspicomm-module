@@ -552,6 +552,11 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
     if (queue_dequeue(&TxQueue, &txdata))
     {
       raspicomm_spi0_send(MAX3140_UART_R | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
+
+      udelay(SwBacksleep);
+
+      /* enable the transmit buffer empty interrupt again */
+      raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM ) );
     }
     else
     {
