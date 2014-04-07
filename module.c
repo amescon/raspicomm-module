@@ -42,6 +42,12 @@ typedef enum {
 } Parity;
 
 typedef enum {
+  MAX3140_WRITE_DATA_R = 1 << 15,
+  MAX3140_WRITE_DATA_TE = 1 << 10,
+  MAX3140_WRITE_DATA_RTS = 1 << 9
+} MAX3140_WRITE_DATA_t;
+
+typedef enum {
   MAX3140_UART_R     = 1 << 15, 
   MAX3140_UART_T     = 1 << 14,
   MAX3140_UART_FEN   = 1 << 13,
