@@ -464,16 +464,10 @@ static int raspicomm_spi0_send(unsigned int mosi)
   // Enable SPI interface: Use CS 0 and set activate bit
   SPI0_CNTLSTAT = SPI0_CS_CHIPSEL0 | SPI0_CS_ACTIVATE;
 
-  // Delay to make sure chip select is high for a short while
-  // udelay(100);
-
   // Write the command into the FIFO
   SPI0_FIFO = v1;
   SPI0_FIFO = v2;
 
-  // TODO: the following code can lockup the kernel in an interrupt! We need to make sure it stops after a timeout
-  // wait for SPI to be ready
-  // This will take about 16 micro seconds
   do {
      status = SPI0_CNTLSTAT;
   } while ( (status & SPI0_CS_DONE) == 0 );
@@ -572,7 +566,6 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
       SpiConfig = SpiConfig | 0xc000; // set bits 15 and 14
       raspicomm_spi0_send(SpiConfig);
 
-      // usleep(SwBacksleep);
       udelay(SwBacksleep); // there is no usleep function in the kernel      
 
       raspicomm_spi0_send(0x8600); // enable receive by disabling RTS (TE set so that no data is sent)
