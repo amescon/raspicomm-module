@@ -565,7 +565,7 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
       SpiConfig = SpiConfig | 0xc000; // set bits 15 and 14
       raspicomm_spi0_send(SpiConfig);
 
-      udelay(SwBacksleep); // there is no usleep function in the kernel      
+      udelay(SwBacksleep); // there is no usleep function in the kernel
 
       raspicomm_spi0_send(0x8600); // enable receive by disabling RTS (TE set so that no data is sent)
     }
