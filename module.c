@@ -845,7 +845,10 @@ static int raspicommDriver_write(struct tty_struct* tty,
   {
     if (!queue_enqueue(&TxQueue, buf[bytes_written]))
     {
-      LOG_INFO("failed to queue data");
+      if (printk_ratelimit())
+      {
+        LOG_INFO("failed to queue data");
+      }
       break;
     }
   }
