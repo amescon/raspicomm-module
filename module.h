@@ -24,3 +24,6 @@ MODULE_SUPPORTED_DEVICE("ttyRPC");
 #else
   #define LOG(fmt, args...) do {} while(0);
 #endif
+
+#define LOG_INFO(fmt, args...) do { printk( KERN_INFO "rpc" ": " fmt "\n", ## args); } while(0)
+
