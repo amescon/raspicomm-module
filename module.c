@@ -525,15 +525,8 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
   // lock on the transmit queue
   mutex_lock( &SpiLock );
 
-  //LOG( "raspicomm_irq_handler called");
-
   // issue a read command to discover the cause of the interrupt
   rxdata = raspicomm_spi0_send(0);
-
-  // DEBUG: log data
-  // #if DEBUG
-  //   printk( KERN_INFO "raspicomm: raspicomm_irq_handler rxdata=%X", rxdata);
-  // #endif
 
   // read the data 
   while(rxdata & MAX3140_UART_R) // while we are receiving
