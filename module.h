@@ -22,5 +22,5 @@ MODULE_SUPPORTED_DEVICE("ttyRPC");
 #ifdef DEBUG
   #define LOG(fmt, args...) do { printk( KERN_DEBUG "rpc: " fmt "\n", ## args); } while(0)
 #else
-  #define LOG(fmt, args...)
+  #define LOG(fmt, args...) do {} while(0);
 #endif
