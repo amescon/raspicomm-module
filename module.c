@@ -835,7 +835,6 @@ static int raspicommDriver_write(struct tty_struct* tty,
   int bytes_written = 0;
   int receive;
   int aux;
-  // int txdata;
 
   LOG ("raspicommDriver_write(count=%i)\n", count);
 
