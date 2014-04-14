@@ -546,7 +546,7 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
   }
 
   /* if the transmit buffer is empty */
-  if ((rxdata & MAX3140_UART_T) /* && (SpiConfig & MAX3140_UART_TM)*/ )
+  else if ((rxdata & MAX3140_UART_T))
   {
     /* get the data to send from the transmit queue */
     if (queue_dequeue(&TxQueue, &txdata))
