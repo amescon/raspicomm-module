@@ -553,21 +553,18 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
     {
       raspicomm_spi0_send(MAX3140_UART_R | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
 
-      udelay(SwBacksleep);
-
       /* enable the transmit buffer empty interrupt again */
       raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM ) );
+      udelay(SwBacksleep);
     }
     else
     {
       /* set bits R + T (bit 15 + bit 14) and clear TM (bit 11) transmit buffer empty */
       raspicomm_spi0_send(SpiConfig = (SpiConfig | MAX3140_UART_R | MAX3140_UART_T) & ~MAX3140_UART_TM);
 
-      /* wait */
-      udelay(SwBacksleep);
-
       /* enable receive by disabling RTS (TE set so that no data is sent)*/
       raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE); //raspicomm_spi0_send(0x8600);
+      udelay(SwBacksleep);
     }
   }
 
