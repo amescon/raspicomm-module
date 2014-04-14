@@ -544,7 +544,6 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
     // handle the received data
     raspicomm_rs485_received( OpenTTY, rxdata & 0x00FF );
   }
-
   /* if the transmit buffer is empty */
   else if ((rxdata & MAX3140_UART_T))
   {
@@ -851,7 +850,6 @@ static int raspicommDriver_write(struct tty_struct* tty,
   }
 
   receive = raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM ) );
-
   udelay(SwBacksleep);
 
   if (receive & MAX3140_UART_T) // transmit buffer is ready to accept data
