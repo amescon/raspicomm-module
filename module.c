@@ -489,6 +489,7 @@ static int raspicomm_spi0_send(unsigned int mosi)
   v2 = SPI0_FIFO;
 
   //LOG( "raspicomm_spi0_send(%X) returned: %X", mosi, ( (v1<<8) | (v2) ) );
+  udelay(SwBacksleep);
 
   return ( (v1<<8) | (v2) );
 }
@@ -554,7 +555,6 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
 
       /* enable the transmit buffer empty interrupt again */
       raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM ) );
-      udelay(SwBacksleep);
     }
     else
     {
@@ -563,7 +563,6 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
 
       /* enable receive by disabling RTS (TE set so that no data is sent)*/
       raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE); //raspicomm_spi0_send(0x8600);
-      udelay(SwBacksleep);
     }
   }
 
@@ -850,7 +849,6 @@ static int raspicommDriver_write(struct tty_struct* tty,
   }
 
   receive = raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM ) );
-  udelay(SwBacksleep);
 
   if (receive & MAX3140_UART_T) // transmit buffer is ready to accept data
   {
