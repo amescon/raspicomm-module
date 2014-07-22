@@ -357,7 +357,7 @@ static unsigned int raspicomm_max3140_get_uart_config(speed_t speed, Databits da
 {
   unsigned int value = 0;
 
-  value |= (MAX3140_UART_R | MAX3140_UART_T);
+  value |= MAX3140_WRITE_CONFIG;
 
   value |= MAX3140_UART_RM;
 
@@ -537,7 +537,7 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
   mutex_lock( &SpiLock );
 
   // issue a read command to discover the cause of the interrupt
-  rxdata = raspicomm_spi0_send(0);
+  rxdata = raspicomm_spi0_send(MAX3140_READ_DATA);
 
   /* if data is available in the receive register */
   if (rxdata & MAX3140_UART_R)
@@ -554,18 +554,18 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
     /* get the data to send from the transmit queue */
     if (queue_dequeue(&TxQueue, &txdata))
     {
-      raspicomm_spi0_send(MAX3140_UART_R | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
+      raspicomm_spi0_send(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
 
       /* enable the transmit buffer empty interrupt again */
-      raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM ) );
+      raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
     }
     else
     {
       /* set bits R + T (bit 15 + bit 14) and clear TM (bit 11) transmit buffer empty */
-      raspicomm_spi0_send(SpiConfig = (SpiConfig | MAX3140_UART_R | MAX3140_UART_T) & ~MAX3140_UART_TM);
+      raspicomm_spi0_send( (SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM) );
 
       /* enable receive by disabling RTS (TE set so that no data is sent)*/
-      raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE); //raspicomm_spi0_send(0x8600);
+      raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
     }
   }
 
@@ -851,7 +851,7 @@ static int raspicommDriver_write(struct tty_struct* tty,
     }
   }
 
-  receive = raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_UART_T | MAX3140_UART_R | MAX3140_UART_TM ) );
+  receive = raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
 
   if (receive & MAX3140_UART_T) // transmit buffer is ready to accept data
   {
