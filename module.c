@@ -544,6 +544,9 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
   {
     // handle the received data
     raspicomm_rs485_received( OpenTTY, rxdata & 0x00FF );
+
+    while ((rxdata = raspicomm_spi0_send(MAX3140_READ_DATA)) & MAX3140_UART_R)
+      raspicomm_rs485_received( OpenTTY, rxdata & 0x00FFF);
   }
   /* if the transmit buffer is empty */
   else if ((rxdata & MAX3140_UART_T))
