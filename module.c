@@ -97,7 +97,11 @@ static void          raspicomm_max3140_configure         (speed_t speed,
 static void          raspicomm_max3140_apply_config(void);
 // static int           raspicomm_max3140_get_parity_flag(char value);
 
-static int           raspicomm_spi0_send(unsigned int mosi);
+static int           raspicomm_spi0_send(unsigned int mosi, int use_backsleep);
+
+#define raspicomm_spi0_send_bs(mosi) raspicomm_spi0_send(mosi, 1)
+#define raspicomm_spi0_send_no_bs(mosi) raspicomm_spi0_send(mosi, 0)
+
 static void          raspicomm_rs485_received(struct tty_struct* tty, char c);
 
 static void          raspicomm_irq_work_queue_handler(struct work_struct *work);
@@ -393,10 +397,10 @@ static void raspicomm_max3140_apply_config()
 { 
   mutex_lock ( &SpiLock );
 
-  raspicomm_spi0_send( SpiConfig );
+  raspicomm_spi0_send_bs( SpiConfig );
 
   /* write data (R set, T not set) and enable receive by disabling RTS (TE set so that no data is sent) */
-  raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_TE | MAX3140_WRITE_DATA_RTS);
+  raspicomm_spi0_send_bs( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_TE | MAX3140_WRITE_DATA_RTS);
 
   mutex_unlock ( &SpiLock );
 }
@@ -459,7 +463,7 @@ static int raspicomm_max3140_get_parity_flag(char c)
 // **** END SPI defines ****
 // ****************************************************************************
 
-static int raspicomm_spi0_send(unsigned int mosi)
+static int raspicomm_spi0_send(unsigned int mosi, int use_backsleep)
 {
   // TODO direct pointer access should not be used -> use kernel functions iowriteX() instead see http://www.makelinux.net/ldd3/chp-9-sect-4
   unsigned char v1,v2;
@@ -489,7 +493,8 @@ static int raspicomm_spi0_send(unsigned int mosi)
   v2 = SPI0_FIFO;
 
   //LOG( "raspicomm_spi0_send(%X) returned: %X", mosi, ( (v1<<8) | (v2) ) );
-  udelay(SwBacksleep);
+  if (use_backsleep)
+    udelay(SwBacksleep);
 
   return ( (v1<<8) | (v2) );
 }
@@ -537,7 +542,7 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
   mutex_lock( &SpiLock );
 
   // issue a read command to discover the cause of the interrupt
-  rxdata = raspicomm_spi0_send(MAX3140_READ_DATA);
+  rxdata = raspicomm_spi0_send_bs(MAX3140_READ_DATA);
 
   /* if data is available in the receive register */
   if (rxdata & MAX3140_UART_R)
@@ -545,7 +550,7 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
     // handle the received data
     raspicomm_rs485_received( OpenTTY, rxdata & 0x00FF );
 
-    while ((rxdata = raspicomm_spi0_send(MAX3140_READ_DATA)) & MAX3140_UART_R)
+    while ((rxdata = raspicomm_spi0_send_bs(MAX3140_READ_DATA)) & MAX3140_UART_R)
       raspicomm_rs485_received( OpenTTY, rxdata & 0x00FFF);
   }
   /* if the transmit buffer is empty */
@@ -554,18 +559,18 @@ void raspicomm_irq_work_queue_handler(struct work_struct *work)
     /* get the data to send from the transmit queue */
     if (queue_dequeue(&TxQueue, &txdata))
     {
-      raspicomm_spi0_send(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
+      raspicomm_spi0_send_bs(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
 
       /* enable the transmit buffer empty interrupt again */
-      raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
+      raspicomm_spi0_send_bs( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
     }
     else
     {
       /* set bits R + T (bit 15 + bit 14) and clear TM (bit 11) transmit buffer empty */
-      raspicomm_spi0_send( (SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM) );
+      raspicomm_spi0_send_bs( (SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM) );
 
       /* enable receive by disabling RTS (TE set so that no data is sent)*/
-      raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
+      raspicomm_spi0_send_bs( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
     }
   }
 
@@ -851,7 +856,7 @@ static int raspicommDriver_write(struct tty_struct* tty,
     }
   }
 
-  receive = raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
+  receive = raspicomm_spi0_send_bs( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
 
   if (receive & MAX3140_UART_T) // transmit buffer is ready to accept data
   {
@@ -860,7 +865,7 @@ static int raspicommDriver_write(struct tty_struct* tty,
     // javicient
     if (queue_dequeue(&TxQueue, &aux))
       /* write data (R set, T not set) */
-      raspicomm_spi0_send( MAX3140_UART_R | aux | raspicomm_max3140_get_parity_flag(aux));
+      raspicomm_spi0_send_bs( MAX3140_UART_R | aux | raspicomm_max3140_get_parity_flag(aux));
   }
 
   mutex_unlock(&SpiLock);
