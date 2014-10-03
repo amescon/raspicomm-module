@@ -16,7 +16,7 @@ MODULE_SUPPORTED_DEVICE("ttyRPC");
 // ****************************************************************************
 
 // outputs verbose debug information
-#define DEBUG
+//#define DEBUG
 
 /* if DEBUG is defined, log using printk(), else do nothing */
 #ifdef DEBUG

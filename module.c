@@ -598,13 +598,7 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
       raspicomm_spi0_send(MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
     }
   }
-  //else
-  //{
-  //  LOG("irq neither data in receive register nor transmit buffer empty");
-  //  /* transmit buffer was not empty, so re-enable transmit empty interrupt */
-  //  raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
-  //}
-
+  
   //// unlock the transmit queue
   //mutex_unlock( &SpiLock );
 
@@ -878,6 +872,13 @@ static int raspicommDriver_write(struct tty_struct* tty,
   /* schedule the work queue handler! */
   //schedule_work(&IrqWork);
 
+  
+  ///* set bits R + T (bit 15 + bit 14) and clear TM (bit 11) transmit buffer empty */
+  //raspicomm_spi0_send((SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM));
+
+  ///* enable transmit empty interrupt */
+  //raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
+
 
   for (bytes_written = 0; bytes_written < count; bytes_written++)
   {
@@ -888,13 +889,6 @@ static int raspicommDriver_write(struct tty_struct* tty,
       enable_irq(Gpio17_Irq);
     }
   }
-
-  
-  ///* set bits R + T (bit 15 + bit 14) and clear TM (bit 11) transmit buffer empty */
-  //raspicomm_spi0_send((SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM));
-
-  ///* enable transmit empty interrupt */
-  //raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
 
   return bytes_written;
 }
