@@ -520,7 +520,6 @@ static void raspicomm_spi0_init(void)
 
   raspicomm_max3140_configure(9600, DATABITS_8, STOPBITS_ONE, PARITY_OFF);
   raspicomm_max3140_apply_config();
-
 }
 
 // map the physical memory that we need for spi0 access
@@ -540,14 +539,13 @@ volatile static unsigned int* raspicomm_spi0_init_mem(void)
 // the bottom half of the irq handler, is allowed to get some sleep
 static void raspicomm_irq_work_queue_handler(struct work_struct *work)
 {
-
 }
 
 // irq handler, that gets fired when the gpio 17 falling edge occurs
 irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
 {
   // schedule the bottom half of the irq
-  //schedule_work( &IrqWork );
+  // schedule_work( &IrqWork );
 
   int rxdata, txdata;
 
@@ -575,14 +573,14 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
     {
       LOG("irq sending data from queue");
 
-      /* enable the transmit buffer empty interrupt */
-      raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
+      ///* enable the transmit buffer empty interrupt */
+      //raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
 
       /* send the data */
       raspicomm_spi0_send(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
 
-      // /* enable the transmit buffer empty interrupt again */
-      // raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
+       /* enable the transmit buffer empty interrupt again */
+       raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
     }
     else
     {
@@ -598,7 +596,7 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
       raspicomm_spi0_send(MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
     }
   }
-  
+
   //// unlock the transmit queue
   //mutex_unlock( &SpiLock );
 
