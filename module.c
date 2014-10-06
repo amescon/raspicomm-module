@@ -82,7 +82,7 @@ typedef enum {
 static int __init raspicomm_init(void);
 static void __exit raspicomm_exit(void);
 
-static int raspicomm_get_free_write_buffer_length(void);
+//static int raspicomm_get_free_write_buffer_length(void);
 
 static int           raspicomm_max3140_get_swbacksleep   (speed_t speed);
 static unsigned char raspicomm_max3140_get_baudrate_index(speed_t speed);
@@ -140,6 +140,10 @@ static int  raspicommDriver_tiocmset(struct tty_struct *tty,
 static int  raspicommDriver_ioctl(struct tty_struct* tty,
                                   unsigned int cmd,
                                   unsigned int long arg);
+static void raspicommDriver_throttle(struct tty_struct * tty);
+static void raspicommDriver_unthrottle(struct tty_struct * tty);
+
+
 // ****************************************************************************
 // **** END raspicommDriver functions ****
 // ****************************************************************************
@@ -160,7 +164,9 @@ static const struct tty_operations raspicomm_ops = {
   .start           = raspicommDriver_start,
   .hangup          = raspicommDriver_hangup,
   .tiocmget        = raspicommDriver_tiocmget,
-  .tiocmset        = raspicommDriver_tiocmset
+  .tiocmset        = raspicommDriver_tiocmset,
+  .throttle        = raspicommDriver_throttle,
+  .unthrottle      = raspicommDriver_unthrottle
 };
 
 #define IRQ_DEV_NAME "raspicomm"
@@ -185,9 +191,6 @@ static struct tty_struct* OpenTTY = NULL;
 
 // transmit queue
 static queue_t TxQueue;
-
-// mutex to secure the spi data transfer
-static DEFINE_MUTEX( SpiLock );
 
 // work queue for bottom half of irq handler
 static DECLARE_WORK( IrqWork, raspicomm_irq_work_queue_handler );
@@ -243,6 +246,7 @@ static int __init raspicomm_init()
 
   /* initialize the port */
   tty_port_init(&Port);
+  Port.low_latency = 1;
 
   /* allocate the driver */
   raspicommDriver = tty_alloc_driver(PORT_COUNT, TTY_DRIVER_REAL_RAW);
@@ -265,7 +269,7 @@ static int __init raspicomm_init()
   raspicommDriver->name                  = "ttyRPC";
   raspicommDriver->major                 = RaspicommMajorDriverNumber;
   raspicommDriver->minor_start           = 0;
-  raspicommDriver->flags                 = TTY_DRIVER_REAL_RAW;
+  //raspicommDriver->flags                 = TTY_DRIVER_REAL_RAW;
   raspicommDriver->type                  = TTY_DRIVER_TYPE_SERIAL;
   raspicommDriver->subtype               = SERIAL_TYPE_NORMAL;
   raspicommDriver->init_termios          = tty_std_termios;
@@ -322,17 +326,15 @@ static void __exit raspicomm_exit()
   LOG("kernel module exit");
 }
 
-// Helper function that calculates the size of the free buffer remaining
-static int raspicomm_get_free_write_buffer_length()
-{
-  int room;
-
-  //mutex_lock( &SpiLock );
-  room = queue_get_room(&TxQueue);
-  //mutex_unlock( &SpiLock );
-
-  return room;
-}
+//// Helper function that calculates the size of the free buffer remaining
+//static int raspicomm_get_free_write_buffer_length()
+//{
+//  int room;
+//
+//  room = queue_get_room(&TxQueue);
+//
+//  return room;
+//}
 
 // helper function
 static unsigned char raspicomm_max3140_get_baudrate_index(speed_t speed)
@@ -392,14 +394,10 @@ static void raspicomm_max3140_configure(speed_t speed, Databits databits, Stopbi
 // initializes the spi0 for supplied configuration
 static void raspicomm_max3140_apply_config()
 { 
-  //mutex_lock ( &SpiLock );
-
   raspicomm_spi0_send( SpiConfig );
 
   /* write data (R set, T not set) and enable receive by disabling RTS (TE set so that no data is sent) */
   raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_TE | MAX3140_WRITE_DATA_RTS);
-
-  //mutex_unlock ( &SpiLock );
 }
 
 // Uncommented by javicient
@@ -544,13 +542,11 @@ static void raspicomm_irq_work_queue_handler(struct work_struct *work)
 // irq handler, that gets fired when the gpio 17 falling edge occurs
 irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
 {
-  // schedule the bottom half of the irq
-  // schedule_work( &IrqWork );
+  //// schedule the bottom half of the irq
+  //schedule_work( &IrqWork );
 
   int rxdata, txdata;
 
-  //// lock on the transmit queue
-  //mutex_lock( &SpiLock );
   LOG("---------");
   LOG("irq start");
 
@@ -563,6 +559,14 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
     LOG("irq data in receive register or fifo");
     // handle the received data
     raspicomm_rs485_received(OpenTTY, rxdata & 0x00FF);
+
+    /* if the INT is still low, receive another  */
+    while (gpio_get_value(Gpio) == 0)
+    {
+      rxdata = raspicomm_spi0_send(MAX3140_READ_DATA);
+      if ((rxdata & MAX3140_UART_R) == MAX3140_UART_R)
+        raspicomm_rs485_received(OpenTTY, rxdata & 0x00FF);
+    }
   }
   /* if the transmit buffer is empty */
   else if ((rxdata & MAX3140_UART_T))
@@ -579,8 +583,8 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
       /* send the data */
       raspicomm_spi0_send(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
 
-       /* enable the transmit buffer empty interrupt again */
-       raspicomm_spi0_send( (SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM ) );
+      /* enable the transmit buffer empty interrupt again */
+      raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
     }
     else
     {
@@ -596,9 +600,6 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
       raspicomm_spi0_send(MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
     }
   }
-
-  //// unlock the transmit queue
-  //mutex_unlock( &SpiLock );
 
   LOG("irq end");
   LOG("-------");
@@ -757,7 +758,7 @@ static void raspicomm_spi0_init_port()
 {
   // 1 MHz spi clock
   //SPI0_CLKSPEED = 250 / 1;
-  SPI0_CLKSPEED = 250;
+  SPI0_CLKSPEED = 80;
 
   // clear FIFOs and all status bits
   SPI0_CNTLSTAT = SPI0_CS_CLRALL;
@@ -859,25 +860,6 @@ static int raspicommDriver_write(struct tty_struct* tty,
 
   LOG ("raspicommDriver_write(count=%i)\n", count);
 
-  //// insert them into the transmit queue
-  //for (bytes_written = 0; bytes_written < count; bytes_written++)
-  //  if (!queue_enqueue(&TxQueue, buf[bytes_written]))
-  //  {
-  //    if (printk_ratelimit()) { LOG_INFO("failed to queue data"); }
-  //    break;
-  //  }
-
-  /* schedule the work queue handler! */
-  //schedule_work(&IrqWork);
-
-  
-  ///* set bits R + T (bit 15 + bit 14) and clear TM (bit 11) transmit buffer empty */
-  //raspicomm_spi0_send((SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM));
-
-  ///* enable transmit empty interrupt */
-  //raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
-
-
   for (bytes_written = 0; bytes_written < count; bytes_written++)
   {
     if (queue_enqueue(&TxQueue, buf[bytes_written]))
@@ -892,13 +874,11 @@ static int raspicommDriver_write(struct tty_struct* tty,
 }
 
 // called by kernel to evaluate how many bytes can be written
-static int raspicommDriver_write_room(struct tty_struct * tty)
+static int raspicommDriver_write_room(struct tty_struct *tty)
 {
-  int length = raspicomm_get_free_write_buffer_length();
-
-  LOG("raspicommDriver_write_room() returns %i", length);
-
-  return length;
+  //int length = raspicomm_get_free_write_buffer_length();
+  //return length;
+  return INT_MAX;
 }
 
 static void raspicommDriver_flush_buffer(struct tty_struct * tty)
@@ -1025,6 +1005,17 @@ static int raspicommDriver_ioctl(struct tty_struct* tty,
 
   return ret;
 }
+
+static void raspicommDriver_throttle(struct tty_struct * tty)
+{
+  LOG_INFO("throttle");
+}
+
+static void raspicommDriver_unthrottle(struct tty_struct * tty)
+{
+  LOG_INFO("unthrottle");
+}
+
 
 // ****************************************************************************
 // **** END raspicommDriver interface functions ****
