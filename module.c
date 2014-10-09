@@ -535,16 +535,12 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
 
   int rxdata, txdata;
 
-  LOG("---------");
-  LOG("irq start");
-
   // issue a read command to discover the cause of the interrupt
   rxdata = raspicomm_spi0_send(MAX3140_READ_DATA);
 
   /* if data is available in the receive register */
   if (rxdata & MAX3140_UART_R)
   {
-    LOG("irq data in receive register or fifo");
     // handle the received data
     raspicomm_rs485_received(OpenTTY, rxdata & 0x00FF);
 
@@ -559,12 +555,9 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
   /* if the transmit buffer is empty */
   else if ((rxdata & MAX3140_UART_T))
   {
-    LOG("irq transmit buffer empty");
     /* get the data to send from the transmit queue */
     if (queue_dequeue(&TxQueue, &txdata))
     {
-      LOG("irq sending data from queue");
-
       ///* enable the transmit buffer empty interrupt */
       //raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
 
@@ -576,8 +569,6 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
     }
     else
     {
-      LOG("irq no data in tx queue");
-
       /* set bits R + T (bit 15 + bit 14) and clear TM (bit 11) transmit buffer empty */
       raspicomm_spi0_send((SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM));
 
@@ -588,9 +579,6 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
       raspicomm_spi0_send(MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
     }
   }
-
-  LOG("irq end");
-  LOG("-------");
 
   return IRQ_HANDLED;
 }
