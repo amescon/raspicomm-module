@@ -82,8 +82,6 @@ typedef enum {
 static int __init raspicomm_init(void);
 static void __exit raspicomm_exit(void);
 
-//static int raspicomm_get_free_write_buffer_length(void);
-
 static int           raspicomm_max3140_get_swbacksleep   (speed_t speed);
 static unsigned char raspicomm_max3140_get_baudrate_index(speed_t speed);
 static unsigned int  raspicomm_max3140_get_uart_config   (speed_t speed, 
@@ -325,16 +323,6 @@ static void __exit raspicomm_exit()
   // log the unloading of the rs-485 module
   LOG("kernel module exit");
 }
-
-//// Helper function that calculates the size of the free buffer remaining
-//static int raspicomm_get_free_write_buffer_length()
-//{
-//  int room;
-//
-//  room = queue_get_room(&TxQueue);
-//
-//  return room;
-//}
 
 // helper function
 static unsigned char raspicomm_max3140_get_baudrate_index(speed_t speed)
@@ -879,8 +867,6 @@ static int raspicommDriver_write(struct tty_struct* tty,
 // called by kernel to evaluate how many bytes can be written
 static int raspicommDriver_write_room(struct tty_struct *tty)
 {
-  //int length = raspicomm_get_free_write_buffer_length();
-  //return length;
   return INT_MAX;
 }
 
