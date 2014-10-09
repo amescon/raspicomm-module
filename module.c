@@ -860,14 +860,17 @@ static int raspicommDriver_write(struct tty_struct* tty,
 
   LOG ("raspicommDriver_write(count=%i)\n", count);
 
-  for (bytes_written = 0; bytes_written < count; bytes_written++)
+  while (bytes_written < count)
   {
     if (queue_enqueue(&TxQueue, buf[bytes_written]))
     {
+      bytes_written++;
       disable_irq(Gpio17_Irq);
       raspicomm_irq_handler(0, 0);
       enable_irq(Gpio17_Irq);
     }
+    else
+      cpu_relax();
   }
 
   return bytes_written;
