@@ -543,14 +543,6 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
   {
     // handle the received data
     raspicomm_rs485_received(OpenTTY, rxdata & 0x00FF);
-
-    /* if the INT is still low, receive another  */
-    while (gpio_get_value(Gpio) == 0)
-    {
-      rxdata = raspicomm_spi0_send(MAX3140_READ_DATA);
-      if ((rxdata & MAX3140_UART_R) == MAX3140_UART_R)
-        raspicomm_rs485_received(OpenTTY, rxdata & 0x00FF);
-    }
   }
   /* if the transmit buffer is empty */
   else if ((rxdata & MAX3140_UART_T))
@@ -685,11 +677,11 @@ static int raspicomm_spi0_init_irq()
   Gpio17_Irq = irq;
 
   // request the interrupt
-  err = request_irq(irq,                                // the irq we want to receive
-                    raspicomm_irq_handler,              // our irq handler function
-                    IRQF_SHARED | IRQF_TRIGGER_FALLING, // irq is shared and triggered on the falling edge
-                    IRQ_DEV_NAME,                       // device name that is displayed in /proc/interrupts
-                    (void*)(raspicomm_irq_handler)      // a unique id, needed to free the irq
+  err = request_irq(irq,                           // the irq we want to receive
+                    raspicomm_irq_handler,         // our irq handler function
+                    IRQF_TRIGGER_LOW,              // irq is triggered on the falling edge
+                    IRQ_DEV_NAME,                  // device name that is displayed in /proc/interrupts
+                    (void*)(raspicomm_irq_handler) // a unique id, needed to free the irq
                    );
 
   if (err) {
