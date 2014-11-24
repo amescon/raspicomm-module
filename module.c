@@ -557,7 +557,11 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
       raspicomm_spi0_send(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
 
       /* enable the transmit buffer empty interrupt again */
-      raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
+      //raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
+
+      /* enable the transmit buffer empty interrupt again. If already empty is returned, set it once again, needed for baudrate 2400 when sending more bytes at once */
+      if (MAX3140_UART_T == raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM)))
+        raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
     }
     else
     {
