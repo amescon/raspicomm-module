@@ -810,16 +810,18 @@ static int raspicommDriver_write(struct tty_struct* tty,
     if (queue_enqueue(&TxQueue, buf[bytes_written]))
     {
       bytes_written++;
-      disable_irq(Gpio17_Irq);
-      local_irq_save(flags);
-
-      raspicomm_irq_handler(0, 0);
-
-      local_irq_restore(flags);
-      enable_irq(Gpio17_Irq);
     }
     else
       cpu_relax();
+
+    disable_irq(Gpio17_Irq);
+    local_irq_save(flags);
+
+    raspicomm_irq_handler(0, 0);
+
+    local_irq_restore(flags);
+    enable_irq(Gpio17_Irq);
+
   }
 
   return bytes_written;
