@@ -801,6 +801,7 @@ static int raspicommDriver_write(struct tty_struct* tty,
                                  int count)
 {
   int bytes_written = 0;
+  unsigned long flags;
 
   LOG ("raspicommDriver_write(count=%i)\n", count);
 
@@ -810,7 +811,11 @@ static int raspicommDriver_write(struct tty_struct* tty,
     {
       bytes_written++;
       disable_irq(Gpio17_Irq);
+      local_irq_save(flags);
+
       raspicomm_irq_handler(0, 0);
+
+      local_irq_restore(flags);
       enable_irq(Gpio17_Irq);
     }
     else
