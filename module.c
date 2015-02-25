@@ -655,7 +655,7 @@ static int raspicomm_spi0_init_irq()
   // request the interrupt
   err = request_irq(irq,                           // the irq we want to receive
                     raspicomm_irq_handler,         // our irq handler function
-                    IRQF_TRIGGER_LOW,              // irq is triggered on the falling edge
+                    IRQF_TRIGGER_FALLING,          // irq is triggered on the falling edge
                     IRQ_DEV_NAME,                  // device name that is displayed in /proc/interrupts
                     (void*)(raspicomm_irq_handler) // a unique id, needed to free the irq
                    );
