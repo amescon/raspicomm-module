@@ -42,7 +42,7 @@ all:
 3.12.22+691:
 	$(MAKE) ARCH=arm CROSS_COMPILE=$(PREFIX) -C $(LINUX_3_12_22_691) M=$(SRC) modules
 
-3.18.7+755:
+3.18.7-v7+755:
 	make ARCH=arm CROSS_COMPILE=$(PREFIX) -C $(LINUX_3_18_7_755) M=$(SRC) modules
 
 clean:
