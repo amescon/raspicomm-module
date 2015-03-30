@@ -192,7 +192,7 @@ static struct tty_struct* OpenTTY = NULL;
 static queue_t TxQueue;
 
 // work queue for bottom half of irq handler
-static DECLARE_WORK( IrqWork, raspicomm_irq_work_queue_handler );
+static DECLARE_DELAYED_WORK(IrqDelWork, raspicomm_irq_work_queue_handler);
 
 // variable used in the delay to simulate the baudrate
 static int SwBacksleep;
@@ -497,6 +497,8 @@ volatile static unsigned int* raspicomm_spi0_init_mem(void)
 // the bottom half of the irq handler, is allowed to get some sleep
 static void raspicomm_irq_work_queue_handler(struct work_struct *work)
 {
+  /* enable receive by disabling RTS (TE set so that no data is sent)*/
+  raspicomm_spi0_send(MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
 }
 
 // irq handler, that gets fired when the gpio 17 falling edge occurs
@@ -541,10 +543,17 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
       raspicomm_spi0_send((SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM));
 
       /* give the max3140 enough time to send the data over usart before disabling RTS, else the transmission is broken */
-      udelay(SwBacksleep);
+      if (SwBacksleep < 500) {
+        udelay(SwBacksleep);
 
-      /* enable receive by disabling RTS (TE set so that no data is sent)*/
-      raspicomm_spi0_send(MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
+        /* enable receive by disabling RTS (TE set so that no data is sent)*/
+        raspicomm_spi0_send(MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
+
+      } else {
+        /* hand the processing of the RTS line over to a non-interrupt routine,
+           because the delay is too long to use udelay() */
+        schedule_delayed_work(&IrqDelWork, usecs_to_jiffies(SwBacksleep));
+      }
     }
   }
 
