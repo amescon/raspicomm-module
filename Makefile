@@ -13,6 +13,8 @@ LINUX_3_10_38_675 = /home/mdk/rpi/linux-rpi-3.10.38+675/
 LINUX_3_12_22_691 = /home/mdk/rpi/linux-rpi-3.12.22+691/
 LINUX_3_18_7_755 = /home/mdk/rpi/linux-rpi-3.18.7+755/
 LINUX_3_18_7_V7_755 = /home/mdk/rpi/linux-rpi-3.18.7-v7+755/
+LINUX_3_18_11_781 = /home/mdk/rpi/linux-rpi-3.18.11+781/
+LINUX_3_18_11_V7_781 = /home/mdk/rpi/linux-rpi-3.18.11-v7+781/
 
 PREFIX = /home/mdk/rpi/tools-master/arm-bcm2708/arm-bcm2708-linux-gnueabi/bin/arm-bcm2708-linux-gnueabi-
 
@@ -49,6 +51,12 @@ all:
 3.18.7-v7+755:
 	make ARCH=arm CROSS_COMPILE=$(PREFIX) -C $(LINUX_3_18_7_V7_755) M=$(SRC) modules
 
+3.18.11+781:
+	make ARCH=arm CROSS_COMPILE=$(PREFIX) -C $(LINUX_3_18_11_781) M=$(SRC) modules
+
+3.18.11-v7+781:
+	make ARCH=arm CROSS_COMPILE=$(PREFIX) -C $(LINUX_3_18_11_V7_781) M=$(SRC) modules
+
 clean:
 	$(MAKE) -C $(LINUX_3_2_27) M=$(SRC) clean
 	$(MAKE) -C $(LINUX_3_6_11) M=$(SRC) clean
@@ -60,3 +68,4 @@ clean:
 	$(MAKE) -C $(LINUX_3_12_22_691) M=$(SRC) clean
 	$(MAKE) -C $(LINUX_3_18_7_755) M=$(SRC) clean
 	$(MAKE) -C $(LINUX_3_18_7_V7_755) M=$(SRC) clean
+	$(MAKE) -C $(LINUX_3_18_11_781) M=$(SRC) clean
