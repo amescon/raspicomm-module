@@ -20,6 +20,8 @@
 // MajorDriverNumber == 0 is using dynamically number
 static const int RaspicommMajorDriverNumber = 0;
 
+static DEFINE_SPINLOCK(dev_lock);
+
 // struct that holds the gpio configuration
 typedef struct {
   int gpio;             // set to the gpio that should be requested
@@ -100,7 +102,6 @@ static int           raspicomm_spi0_send(unsigned int mosi);
 
 static void          raspicomm_rs485_received(struct tty_struct* tty, char c);
 
-static void          raspicomm_irq_work_queue_handler(struct work_struct *work);
 irqreturn_t          raspicomm_irq_handler(int irq, void* dev_id);
 
 static void                   raspicomm_spi0_init(void);
@@ -141,7 +142,7 @@ static int  raspicommDriver_ioctl(struct tty_struct* tty,
                                   unsigned int long arg);
 static void raspicommDriver_throttle(struct tty_struct * tty);
 static void raspicommDriver_unthrottle(struct tty_struct * tty);
-
+static void raspicomm_start_transfer(void);
 
 // ****************************************************************************
 // **** END raspicommDriver functions ****
@@ -190,9 +191,6 @@ static struct tty_struct* OpenTTY = NULL;
 
 // transmit queue
 static queue_t TxQueue;
-
-// work queue for bottom half of irq handler
-static DECLARE_WORK( IrqWork, raspicomm_irq_work_queue_handler );
 
 // variable used in the delay to simulate the baudrate
 static int SwBacksleep;
@@ -325,12 +323,13 @@ static void __exit raspicomm_exit()
   LOG("kernel module exit");
 }
 
+
 // helper function
 static unsigned char raspicomm_max3140_get_baudrate_index(speed_t speed)
 {
   switch (speed)
   {
-    case 600: return 0x7;
+    case 600: return 0xF;
     case 1200: return 0xE;
     case 2400: return 0xD;
     case 4800: return 0xC;
@@ -419,7 +418,29 @@ static int raspicomm_max3140_get_parity_flag(char c)
    return ret;
  }
 
+static void raspicomm_start_transfer() {
+  int rxdata, txdata;
+  unsigned long flags; // AHB
+  spin_lock_irqsave(&dev_lock, flags); // AHB vor Eintritt
 
+  // TBE-interrupt enable, falls das noch nicht erledigt ist
+  if (SpiConfig & MAX3140_UART_TM) { // bereits eingeschaltet --> nichts mehr tun, der TBE-IR sorgt schon irgendwann für ein Leeren der Queue
+    rxdata = 0; //
+  }
+  else { // noch nicht eingeschaltet --> jetzt einschalten
+    rxdata = raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
+  }
+
+  if ((rxdata & MAX3140_UART_T)) { // TBE --> senden möglich
+    if (queue_dequeue(&TxQueue, &txdata)) { // Byte zum Senden da --> gleich erledigen
+      /* send the data (RTS enabled) AHB rxdata für Log */
+      rxdata = raspicomm_spi0_send(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
+      LOG("raspicomm_start_transfer: 0x%X --> 0x%X", txdata, rxdata); // AHB
+    } // Byte zum Senden da
+  }
+
+  spin_unlock_irqrestore(&dev_lock, flags); // AHB Freigabe des Locks
+}
 
 static int raspicomm_spi0_send(unsigned int mosi)
 {
@@ -494,18 +515,15 @@ volatile static unsigned int* raspicomm_spi0_init_mem(void)
   return p;
 }
 
-// the bottom half of the irq handler, is allowed to get some sleep
-static void raspicomm_irq_work_queue_handler(struct work_struct *work)
-{
-}
-
 // irq handler, that gets fired when the gpio 17 falling edge occurs
 irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
 {
-  //// schedule the bottom half of the irq
-  //schedule_work( &IrqWork );
-
   int rxdata, txdata;
+
+  // AHB Der Zugriff auf den UART wird durch einen Spinlock abgesichert (exklusiver Zugriff), somit kann auch
+  //     ... start_transfer() auf die UART zugreifen
+  unsigned long flags; // AHB
+  spin_lock_irqsave(&dev_lock, flags); // AHB vor Eintritt
 
   // issue a read command to discover the cause of the interrupt
   rxdata = raspicomm_spi0_send(MAX3140_READ_DATA);
@@ -515,6 +533,7 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
   {
     // handle the received data
     raspicomm_rs485_received(OpenTTY, rxdata & 0x00FF);
+    LOG("raspicomm_irq recv: 0x%X", rxdata); // AHB
   }
   /* if the transmit buffer is empty */
   else if ((rxdata & MAX3140_UART_T))
@@ -522,18 +541,9 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
     /* get the data to send from the transmit queue */
     if (queue_dequeue(&TxQueue, &txdata))
     {
-      ///* enable the transmit buffer empty interrupt */
-      //raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
-
-      /* send the data */
-      raspicomm_spi0_send(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
-
-      /* enable the transmit buffer empty interrupt again */
-      //raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
-
-      /* enable the transmit buffer empty interrupt again. If already empty is returned, set it once again, needed for baudrate 2400 and lower when sending more bytes at once */
-      while (MAX3140_UART_T == raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM)))
-        raspicomm_spi0_send((SpiConfig = SpiConfig | MAX3140_WRITE_CONFIG | MAX3140_UART_TM));
+      /* send the data (RTS enabled) AHB rxdata für Log */
+      rxdata = raspicomm_spi0_send(MAX3140_WRITE_DATA | txdata | raspicomm_max3140_get_parity_flag((char)txdata));
+      LOG("raspicomm_irq sent: 0x%X --> 0x%X", txdata, rxdata); // AHB
     }
     else
     {
@@ -541,12 +551,15 @@ irqreturn_t raspicomm_irq_handler(int irq, void* dev_id)
       raspicomm_spi0_send((SpiConfig = (SpiConfig | MAX3140_WRITE_CONFIG) & ~MAX3140_UART_TM));
 
       /* give the max3140 enough time to send the data over usart before disabling RTS, else the transmission is broken */
-      udelay(SwBacksleep);
+      udelay(SwBacksleep); // AHB Erläuterung: Microsekunden Verzögerung: 10.000.000/Baudrate: 9600 --> ca. 1 mSec
 
       /* enable receive by disabling RTS (TE set so that no data is sent)*/
       raspicomm_spi0_send(MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_RTS | MAX3140_WRITE_DATA_TE);
+      LOG("raspicomm_irq RTS disabled --> receiving..."); // AHB
     }
-  }
+  } // RX oder TBE interrupt
+
+  spin_unlock_irqrestore(&dev_lock, flags); // AHB Freigabe des Locks
 
   return IRQ_HANDLED;
 }
@@ -795,15 +808,13 @@ static void raspicommDriver_close(struct tty_struct* tty, struct file* file)
   }
 }
 
-// called by the kernel after write() is called from userspace and write_room() returns > 0
-static int raspicommDriver_write(struct tty_struct* tty, 
-                                 const unsigned char* buf,
-                                 int count)
+static int raspicommDriver_write(struct tty_struct* tty,
+  const unsigned char* buf,
+  int count)
 {
   int bytes_written = 0;
-  unsigned long flags;
 
-  LOG ("raspicommDriver_write(count=%i)\n", count);
+  LOG("raspicommDriver_write(count=%i)\n", count);
 
   while (bytes_written < count)
   {
@@ -811,18 +822,14 @@ static int raspicommDriver_write(struct tty_struct* tty,
     {
       bytes_written++;
     }
-    else
+    else { // kein Platz mehr vorhanden --> schlafen, senden
       cpu_relax();
 
-    disable_irq(Gpio17_Irq);
-    local_irq_save(flags);
-
-    raspicomm_irq_handler(0, 0);
-
-    local_irq_restore(flags);
-    enable_irq(Gpio17_Irq);
-
+      raspicomm_start_transfer();
+    } // nur falls Platz knapp
   }
+  // AHB Sorge dafür, dass der TBE interrupt auf jeden Fall aktiviert wird (falls nicht bereits oben bei Platzmangel)
+  raspicomm_start_transfer();
 
   return bytes_written;
 }
