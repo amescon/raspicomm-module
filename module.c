@@ -95,8 +95,7 @@ static void          raspicomm_max3140_configure         (speed_t speed,
                                                           Databits databits, 
                                                           Stopbits stopbits, 
                                                           Parity parity);
-static void          raspicomm_max3140_apply_config(void);
-// static int           raspicomm_max3140_get_parity_flag(char value);
+static bool          raspicomm_max3140_apply_config(void);
 
 static int           raspicomm_spi0_send(unsigned int mosi);
 
@@ -104,7 +103,7 @@ static void          raspicomm_rs485_received(struct tty_struct* tty, char c);
 
 irqreturn_t          raspicomm_irq_handler(int irq, void* dev_id);
 
-static void                   raspicomm_spi0_init(void);
+static bool                   raspicomm_spi0_init(void);
 volatile static unsigned int* raspicomm_spi0_init_mem(void);
 static int                    raspicomm_spi0_init_gpio(void);
 static void                   raspicomm_spi0_init_gpio_alt(int gpio, int alt);
@@ -239,6 +238,11 @@ static int __init raspicomm_init()
   // log the start of the initialization
   LOG("kernel module initialization");
 
+  // initialize the spi0
+  if (!raspicomm_spi0_init()) {
+    return -ENODEV;
+  }
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
 
   /* initialize the port */
@@ -289,9 +293,6 @@ static int __init raspicomm_init()
     put_tty_driver(raspicommDriver);
     return -1; // return if registration fails
   }
-
-  // initialize the spi0
-  raspicomm_spi0_init();
 
   LOG ("raspicomm_init() completed");
 
@@ -380,12 +381,24 @@ static void raspicomm_max3140_configure(speed_t speed, Databits databits, Stopbi
 }
 
 // initializes the spi0 for supplied configuration
-static void raspicomm_max3140_apply_config()
+static bool raspicomm_max3140_apply_config()
 { 
+  int rxconfig;
+
+  /* configure the SPI */
   raspicomm_spi0_send( SpiConfig );
+
+  /* read back the config */
+  rxconfig = raspicomm_spi0_send(MAX3140_READ_CONFIG);
+
+  if ((rxconfig & 0xFFF) != (SpiConfig & 0xFFF)) {
+    return 0;
+  }
 
   /* write data (R set, T not set) and enable receive by disabling RTS (TE set so that no data is sent) */
   raspicomm_spi0_send( MAX3140_WRITE_DATA_R | MAX3140_WRITE_DATA_TE | MAX3140_WRITE_DATA_RTS);
+
+  return 1;
 }
 
 // Uncommented by javicient
@@ -483,8 +496,9 @@ static int raspicomm_spi0_send(unsigned int mosi)
 }
 
 // one time initialization for the spi0 
-static void raspicomm_spi0_init(void)
+static bool raspicomm_spi0_init(void)
 {
+  bool success;
   // map the spi0 memory
   Spi0 = raspicomm_spi0_init_mem();
 
@@ -498,7 +512,20 @@ static void raspicomm_spi0_init(void)
   raspicomm_spi0_init_irq();
 
   raspicomm_max3140_configure(9600, DATABITS_8, STOPBITS_ONE, PARITY_OFF);
-  raspicomm_max3140_apply_config();
+
+  success = raspicomm_max3140_apply_config();
+
+  if (!success)
+  {
+    // free mapped memory
+    raspicomm_spi0_deinit_mem(Spi0);
+    // free the irq
+    raspicomm_spi0_deinit_irq();
+    // free gpio
+    raspicomm_spi0_deinit_gpio();
+  }
+
+  return success;
 }
 
 // map the physical memory that we need for spi0 access
