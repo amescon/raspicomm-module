@@ -1,16 +1,12 @@
-#include <mach/platform.h> /* included for BCM2709 & BCM2708 definitions, e.g. BCM2708_PERI_BASE */
 
-
-/* on newer kernel the following defines are defined in mach/platform.h 
- * on older kernels, the following defines are missing and we need to define them ourself */
-
-#ifndef BCM2708_PERI_BASE
-
-  #define BCM2708_PERI_BASE 0x20000000
-  #define GPIO_BASE (BCM2708_PERI_BASE + 0x200000)
-  #define SPI0_BASE (BCM2708_PERI_BASE + 0x204000)
-
+#ifdef CONFIG_ARCH_MULTI_V7
+#define BCM2708_PERI_BASE 0x3F000000
+#else
+#define BCM2708_PERI_BASE 0x20000000
 #endif
+
+#define GPIO_BASE (BCM2708_PERI_BASE + 0x200000)
+#define SPI0_BASE (BCM2708_PERI_BASE + 0x204000)
 
 #define SPI0_CNTLSTAT *(Spi0 + 0)
 #define SPI0_FIFO *(Spi0 + 1)
